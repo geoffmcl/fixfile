@@ -133,10 +133,14 @@
 #define     MXARGSS     ( MXARGS * sizeof(PVOID) )
 #define	   DEF_VERB    1
 
-//#define     MALLOC   malloc
-//#define     MFREE    free
+#ifdef _WIN32
 #define     MALLOC(a)   LocalAlloc(LPTR,a)
 #define     MFREE(a)    LocalFree(a)
+#else // !#ifdef _WIN32
+// linux - in stdlib.h
+#define     MALLOC   malloc
+#define     MFREE    free
+#endif // #ifdef _WIN32 y/n
 
 //#define		MXINPS		256 // FIX20050205 removed
 //#define		MAXCOL		78

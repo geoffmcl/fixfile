@@ -1027,7 +1027,7 @@ BOOL		bAdd2List( LPSTR lps, DWORD dwFlag )
                chkme( "Use mem for this size ..." );
 //               glpOut2 = dMALLOC( (dwSiz + 264) );
                glpOut2 = dMALLOC(dws);
-               gbAlloc = (BOOL)(glpOut2);
+               gbAlloc = (glpOut2 ? TRUE : FALSE);
                if( !glpOut2 )
                {
                   chkme( "C:ERROR: Bigger OUT memory FAILED ... this is BAD!!!" );
@@ -3371,7 +3371,7 @@ int   GetXHdrs( LPTSTR lpn, DWORD dwi )
                {
                   // rotate the LAST word to the FRONT then follow with rest
                   // Annie's birthday, thus must shower and off to lunch
-                  // avec la mere (  this is her mother / c'est la mère de Annie )
+                  // avec la mere (  this is her mother / c'est la mï¿½re de Annie )
                   DWORD dwj, dwk;
                   LPTSTR   lps = lpn;  // only now interested in our NAME buffer
                   dwk = 0; // extracted from the FILE buffer given ...
@@ -3569,7 +3569,7 @@ int  GetHdrs_OK( LPTSTR lpc, DWORD dwIn )
                {
                   // rotate the LAST word to the FRONT then follow with rest
                   // Annie's birthday, thus must shower and off to lunch
-                  // avec la mere (  this is her mother / c'est la mère de Annie )
+                  // avec la mere (  this is her mother / c'est la mï¿½re de Annie )
                   DWORD dwj, dwk;
                   LPTSTR   lps = lpn;  // only now interested in our NAME buffer
                   dwk = 0; // extracted from the FILE buffer given ...
@@ -4227,7 +4227,7 @@ DWORD WINAPI do_runexcell( PVOID lpParam )  // thread data
          0,
          NULL ) )
       {
-         sprintf(EndBuf(lpe), MEOR"MSG [%s]", lpMsgBuf);
+         sprintf(EndBuf(lpe), MEOR"MSG [%s]", (char *)lpMsgBuf);
          // Process any inserts in lpMsgBuf.
          // Display the string.
          //MessageBox( NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );

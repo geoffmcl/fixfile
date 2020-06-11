@@ -11,17 +11,19 @@ extern  "C"
 #pragma warning(disable:4996)   // added for MSVC8
 #endif
 
-#define	WIN32_MEAN_AND_LEAN
 #include "FixFVers.h" // version, and other FIRST things
 
 #ifdef _WIN32
+#define	WIN32_MEAN_AND_LEAN
 #include	<windows.h>
 #include	<direct.h>
 #else // !_WIN32 == unix
+/////////////////////////////////////////////////////////////////
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h> // for strlen, ...
 typedef unsigned int DWORD;
+typedef unsigned short WORD;
 typedef int HANDLE;
 typedef bool BOOL;
 typedef char * LPTSTR;
@@ -51,11 +53,34 @@ typedef struct _LIST_ENTRY {
 typedef void VOID;
 typedef DWORD * PDWORD;
 #define INVALID_HANDLE_VALUE -1
+typedef struct _SYSTEMTIME {
+    WORD wYear;
+    WORD wMonth;
+    WORD wDayOfWeek;
+    WORD wDay;
+    WORD wHour;
+    WORD wMinute;
+    WORD wSecond;
+    WORD wMilliseconds;
+} SYSTEMTIME, * PSYSTEMTIME, * LPSYSTEMTIME;
+
 typedef struct _FILETIME {
     DWORD dwLowDateTime;
     DWORD dwHighDateTime;
 } FILETIME;
-
+typedef struct _WIN32_FIND_DATA {
+    DWORD dwFileAttributes;
+    //FILETIME ftCreationTime;
+    //FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
+    DWORD dwReserved0;
+    DWORD dwReserved1;
+    char  cFileName[264];
+    char   cAlternateFileName[14];
+} WIN32_FIND_DATA, * PWIN32_FIND_DATA;
+////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()
 

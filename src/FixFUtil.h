@@ -4,6 +4,12 @@
 #ifndef	_FixFUtil_H
 #define	_FixFUtil_H
 
+#ifdef _WIN32
+#define MCDECL _cdecl
+#else
+#define MCDECL
+#endif
+
 #define  MXRLINE        264
 
 #define	VERB1		( giVerbose > 0 )
@@ -60,9 +66,9 @@ typedef  struct   tagDL {
    TCHAR       dl_szFile[1];
 }DL, * PDL;
 
-extern   INT   _cdecl sprtf( LPTSTR lpf, ... );
-extern   VOID  _cdecl AddReport( LPTSTR lpf, ... );
-extern   VOID  _cdecl chkme( LPTSTR lpf, ... );
+extern   INT   MCDECL sprtf( LPTSTR lpf, ... );
+extern   VOID  MCDECL AddReport( LPTSTR lpf, ... );
+extern   VOID  MCDECL chkme( LPTSTR lpf, ... );
 
 //#ifdef	NDEBUG
 //#define	DO1(a,b)

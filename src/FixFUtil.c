@@ -21,7 +21,7 @@ TCHAR    g_szDiagDef[] = "TEMPFIXF.TXT";  // only ONE
 TCHAR    g_szNextFile[264];
 HANDLE   g_hDiagFile = 0;
 
-VOID  _cdecl chkme( LPTSTR lpf, ... )
+VOID  MCDECL chkme( LPTSTR lpf, ... )
 {
 #ifndef  NDEBUG
    static TCHAR s_chkme[1024];
@@ -182,7 +182,7 @@ VOID  DiagString( LPTSTR lps )
 }
 
 
-INT  _cdecl sprtf( LPTSTR lpf, ... )
+INT  MCDECL sprtf( LPTSTR lpf, ... )
 {
    LPTSTR   lpd = &s_szSprtfBuf[0];
    INT      iRet;
@@ -488,7 +488,7 @@ PDL   Add2DLList( LPTSTR lps )
    return pdl;
 }
 
-VOID  _cdecl AddReport( LPTSTR lpf, ... ) // like "Added CR to line %d (%d)."MEOR, dwl, dwl2 );
+VOID  MCDECL AddReport( LPTSTR lpf, ... ) // like "Added CR to line %d (%d)."MEOR, dwl, dwl2 );
 {
    static TCHAR _s_addrepbuf[1024];
    LPTSTR   lpd = _s_addrepbuf;
@@ -1707,14 +1707,14 @@ LPTSTR   FileTime2AscStg( FILETIME * pft )
       &st ) )   // receives system time
    {
 //         "%02d-%02d-%02d %02d:%02d:%02d",
-      sprintf(lpb,
-         "%02d-%02d-%02d %2d:%02d",
-         st.wDay,
-         st.wMonth,
-         (st.wYear % 100),
-         st.wHour,
-         st.wMinute,
-         st.wSecond );
+       sprintf(lpb,
+           "%02d-%02d-%02d %2d:%02d",
+           st.wDay,
+           st.wMonth,
+           (st.wYear % 100),
+           st.wHour,
+           st.wMinute);
+         // st.wSecond
    }
    else
    {

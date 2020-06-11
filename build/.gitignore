@@ -8,7 +8,7 @@ Debug/*
 *.sln
 Release/*
 TEMPFIXF.TXT
-bldlog-1.txt
+bldlog-*.txt
 cmake_install.cmake
 *.dir/*
 x64/*
