@@ -26,8 +26,8 @@ extern  "C"
 #include <inttypes.h> // for "%" PRId64 " bytes"
 typedef unsigned int DWORD;
 typedef unsigned short WORD;
-typedef int HANDLE;
-typedef int * PHANDLE;
+typedef FILE * HANDLE;
+typedef FILE ** PHANDLE;
 typedef bool BOOL;
 typedef char * LPTSTR;
 typedef char * PTSTR;
@@ -61,7 +61,7 @@ typedef struct _LIST_ENTRY {
 } LIST_ENTRY, *PLIST_ENTRY;
 typedef void VOID;
 typedef DWORD * PDWORD;
-#define INVALID_HANDLE_VALUE -1
+#define INVALID_HANDLE_VALUE NULL
 typedef struct _SYSTEMTIME {
     WORD wYear;
     WORD wMonth;
