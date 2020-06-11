@@ -22,9 +22,12 @@ extern  "C"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h> // for strlen, ...
+#include <stdint.h>
+#include <inttypes.h> // for "%" PRId64 " bytes"
 typedef unsigned int DWORD;
 typedef unsigned short WORD;
 typedef int HANDLE;
+typedef int * PHANDLE;
 typedef bool BOOL;
 typedef char * LPTSTR;
 typedef char * PTSTR;
@@ -33,19 +36,25 @@ typedef int INT;
 typedef char TCHAR;
 typedef long LONG;
 typedef long long LONGLONG;
+typedef unsigned long long ULONGLONG;
 typedef __int64_t __int64;
 typedef void * PVOID;
+#define TRUE true
+#define FALSE false
 typedef union _LARGE_INTEGER {
     struct {
         DWORD LowPart;
         LONG HighPart;
-    } DUMMYSTRUCTNAME;
+    };
+    LONGLONG QuadPart;
+} LARGE_INTEGER;
+typedef union _ULARGE_INTEGER {
     struct {
         DWORD LowPart;
-        LONG HighPart;
-    } u;
-    LONGLONG QuadPart;
- } LARGE_INTEGER;
+        DWORD HighPart;
+    };
+    ULONGLONG QuadPart;
+} ULARGE_INTEGER;
 typedef struct _LIST_ENTRY {
     struct _LIST_ENTRY *Flink;
     struct _LIST_ENTRY *Blink;
@@ -79,7 +88,7 @@ typedef struct _WIN32_FIND_DATA {
     DWORD dwReserved1;
     char  cFileName[264];
     char   cAlternateFileName[14];
-} WIN32_FIND_DATA, * PWIN32_FIND_DATA;
+} WIN32_FIND_DATA, * PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()

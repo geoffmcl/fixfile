@@ -1,7 +1,7 @@
 #!/bin/sh
 #< build-me.sh - 20200610 - for fixfile project
 BN="`basename $0`"
-BLDLOG="bldlog-1.txt"
+BLDLOG="bldlog-u.txt"
 
 if [ -f "$BLDLOG" ]; then
     rm -f "$BLDLOG"
