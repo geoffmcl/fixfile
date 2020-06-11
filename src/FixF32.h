@@ -7,13 +7,56 @@ extern  "C"
 {
 #endif  // __cplusplus
 
+#ifdef _MSC_VER
 #pragma warning(disable:4996)   // added for MSVC8
+#endif
 
 #define	WIN32_MEAN_AND_LEAN
 #include "FixFVers.h" // version, and other FIRST things
 
+#ifdef _WIN32
 #include	<windows.h>
 #include	<direct.h>
+#else // !_WIN32 == unix
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h> // for strlen, ...
+typedef unsigned int DWORD;
+typedef int HANDLE;
+typedef bool BOOL;
+typedef char * LPTSTR;
+typedef char * PTSTR;
+typedef char * LPSTR;
+typedef int INT;
+typedef char TCHAR;
+typedef long LONG;
+typedef long long LONGLONG;
+typedef __int64_t __int64;
+typedef void * PVOID;
+typedef union _LARGE_INTEGER {
+    struct {
+        DWORD LowPart;
+        LONG HighPart;
+    } DUMMYSTRUCTNAME;
+    struct {
+        DWORD LowPart;
+        LONG HighPart;
+    } u;
+    LONGLONG QuadPart;
+ } LARGE_INTEGER;
+typedef struct _LIST_ENTRY {
+    struct _LIST_ENTRY *Flink;
+    struct _LIST_ENTRY *Blink;
+} LIST_ENTRY, *PLIST_ENTRY;
+typedef void VOID;
+typedef DWORD * PDWORD;
+#define INVALID_HANDLE_VALUE -1
+typedef struct _FILETIME {
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+} FILETIME;
+
+#endif
 #include <stdio.h>      // for vsprintf()
 
 #include "FixFList.h"
