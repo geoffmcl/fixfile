@@ -111,8 +111,13 @@ int	GetNum( LPSTR lps, int	mx )
 
 VOID  Close_O_File( VOID )
 {
+#ifdef _WIN32
    if( VFH( gOut_Hand ) )   //		; Get OUT handle
       CloseHandle(gOut_Hand);
+#else
+    if (VFH(gOut_Hand))   //		; Get OUT handle
+        fclose(gOut_Hand);
+#endif
    gOut_Hand = 0;
 }
 
@@ -166,13 +171,19 @@ VOID  Add_TEMPE( LPTSTR lpr )
 ///////////////////////////////////////////////////////////////////////////////
 HANDLE  Open_A_File( LPTSTR lpf )
 {
-   HANDLE h = CreateFile( lpf, // file name
+    HANDLE h = 0;
+#ifdef _WIN32
+   h = CreateFile( lpf, // file name
          (GENERIC_READ | GENERIC_WRITE),  // access mode
          FILE_SHARE_READ,  // share mode
          0, // SD
          OPEN_EXISTING, // how to create
          FILE_ATTRIBUTE_NORMAL,  // file attributes
          0 ); // handle to template file
+#else // !#ifdef _WIN32
+    h = fopen(lpf, "r");
+#endif // #ifdef _WIN32 y/n
+
    if( !VFH(h) )
       h = 0;
    return h;
@@ -180,13 +191,19 @@ HANDLE  Open_A_File( LPTSTR lpf )
 
 HANDLE   Creat_A_File( LPTSTR lpf )
 {
-   HANDLE h = CreateFile( lpf, // file name
+    HANDLE h = 0;
+#ifdef _WIN32
+    h = CreateFile( lpf, // file name
          (GENERIC_READ | GENERIC_WRITE),  // access mode
          FILE_SHARE_READ,  // share mode
          0, // SD
          CREATE_ALWAYS, // how to create
          FILE_ATTRIBUTE_NORMAL,  // file attributes
          0 ); // handle to template file
+#else // !#ifdef _WIN32
+    h = fopen(lpf, "w");
+#endif // #ifdef _WIN32 y/
+
    if( !VFH(h) )
       h = 0;
    return h;
