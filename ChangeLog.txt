@@ -1,0 +1,21 @@
+FixF32.txt			started: 5 Decemebr, 2005
+
+Since this is now a git repo, just use 'git log' to see all the commit history,
+whihc is an effective change-log... This file was last updated at -
+
+#define  VersNum1    2
+#define  VersNum2    0
+#define  VersNum3    0   // FIX20200611 - make into github repo
+#define  VerDate	"11 June, 2020" // in Dell03 - MSVC16 2019 x64
+
+So many fixes, enhancements did not get added to this log
+See src/FixFVers.h, which has more details...
+
+// FIX20080422 - add -ud to convert Unified DIFF file to Unix
+// bUnifDiff W.ws_UnifDiff;   // Convert Unified DIFF patch headers '\' to '/'
+
+Added the following FEATURE ...
+// FIX20051205 - add delete hi-bit characters - only ASCII output
+// dmsg(	" -dh[s]     Delete hi-bit characters -dhs substitute a space."MEOR );
+#define  VersNum3    23  // FIX20050203 - add -dh[s] to DELETE hi-bit chars, subst space
+#define  VerDate	"5 December, 2005" // also first in MSVC7.1 ...
