@@ -13,6 +13,7 @@ extern  "C"
 
 #include "FixFVers.h" // version, and other FIRST things
 
+#include <stdio.h>
 #ifdef _WIN32
 #define	WIN32_MEAN_AND_LEAN
 #include	<windows.h>
@@ -26,6 +27,7 @@ extern  "C"
 #include <inttypes.h> // for "%" PRId64 " bytes"
 typedef unsigned int DWORD;
 typedef unsigned short WORD;
+typedef unsigned char BYTE;
 typedef FILE * HANDLE;
 typedef FILE ** PHANDLE;
 typedef bool BOOL;
@@ -89,6 +91,9 @@ typedef struct _WIN32_FIND_DATA {
     char  cFileName[264];
     char   cAlternateFileName[14];
 } WIN32_FIND_DATA, * PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;
+#define FILE_BEGIN 0
+#define FILE_CURRENT 1
+#define FILE_END 2
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()
