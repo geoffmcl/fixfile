@@ -34,12 +34,14 @@ typedef MYHAND* PMYHAND;
 #include <string.h> // for strlen, ...
 #include <stdint.h>
 #include <inttypes.h> // for "%" PRId64 " bytes"
+#include <ctype.h> // for toupper, ...
 typedef unsigned int DWORD;
 typedef unsigned short WORD;
 typedef unsigned char BYTE;
 typedef FILE * MYHAND;
 typedef MYHAND* PMYHAND;
 typedef bool BOOL;
+typedef BOOL* PBOOL;
 typedef char * LPTSTR;
 typedef char * PTSTR;
 typedef char * LPSTR;
@@ -103,6 +105,7 @@ typedef struct _WIN32_FIND_DATA {
 #define FILE_BEGIN SEEK_SET // 1 Beginning of file
 #define FILE_CURRENT SEEK_CUR // 2 Current position of the file pointer1
 #define FILE_END SEEK_END // 3 End of file
+#define _strnicmp strnicmp
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()

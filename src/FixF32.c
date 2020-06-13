@@ -607,8 +607,13 @@ BOOL  ChangeOUTFile( VOID )
    if( Do_File_Create( lpc, &h ) )
    {
       // have the NEW handle
+#ifdef USE_COMP_FIO
+      if( VFH(gOut_Hand) )    // get active OUTPUT handle
+         fclose( gOut_Hand );
+#else      
       if( VFH(gOut_Hand) )    // get active OUTPUT handle
          CloseHandle( gOut_Hand );
+#endif         
       gOut_Hand = h;
       strcpy(lpf,lpc);  // update OUTPUT name ...
       return TRUE;
@@ -668,7 +673,11 @@ BOOL  outit( LPTSTR lpb, DWORD dwLen )
    else  // if( !VFH(h) )
    {
       h = ghStdOut;  // if NONE, use console standard out
+#ifdef USE_COMP_FIO
+      dww = fwrite( lpb, 1, dwLen, h );
+#else
       bRet = WriteFile(h, lpb, dwLen, &dww, NULL);
+#endif
       gdwWritten += dwLen;
    }
 
