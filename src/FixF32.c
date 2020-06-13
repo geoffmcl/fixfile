@@ -241,7 +241,11 @@ BOOL  Get_O_File( VOID )
       {
          // one day fix this
          bRet = TRUE;
+#ifdef USE_COMP_FIO
+         fclose(h);
+#else         
          CloseHandle(h);
+#endif         
       }
       else
       {
@@ -270,7 +274,7 @@ Do_Create:
 //; Init Uninitialised Data Segment
 VOID  Do_Init( VOID )
 {
-    MYHAND h;
+//    MYHAND h;
 //	; Items to INIT'ed to ZERO
 //	; ========================
    Out_FSiz = 0;  // 1 	Mov	Out_FSiz2,Ax
@@ -285,7 +289,8 @@ VOID  Do_Init( VOID )
 //	; Other items it initialise
 //	; =========================
 //	Inc	Ax
-    h = GetStdHandle(STD_OUTPUT_HANDLE);
+//    h = GetStdHandle(STD_OUTPUT_HANDLE);
+#ifdef _WIN32
    ghStdOut = GetStdHandle( STD_OUTPUT_HANDLE );   // Standard out
    ghErrOut = GetStdHandle( STD_ERROR_HANDLE  );   // error out
    if( VFH(ghStdOut) )
@@ -293,6 +298,7 @@ VOID  Do_Init( VOID )
       if( !GetConsoleMode( ghStdOut, &gdwMode ) )
          gbRedON = TRUE;
    }
+#endif   
 
 //	Mov	Ax,MXLINE	; Get DEFAULT line length
 	g_dwMaxLine = MXLINE; // Set default LINE length
@@ -327,6 +333,10 @@ BOOL  Setup(int argc, char* argv[])
         DiagOpen();
         ghStdOut = (MYHAND)0x0c;   // 1 Standard out
         ghErrOut = (MYHAND)2;   // error out
+#ifdef USE_COMP_FIO
+        ghStdOut = stdout;
+        ghErrOut = stderr;
+#endif        
 
       sprtf( "Begin FixF32 with %d bytes of work memory."MEOR, sizeof(WRK) );
       gdwSize = sizeof(WRK);  //  W.ws_dwSize    // ALLOCATION SIZE
