@@ -111,7 +111,7 @@ void add_size_time(char * lb, WIN32_FIND_DATA * pfd)
    li.HighPart = pfd->nFileSizeHigh;
    //sprintf(lb, "Loading file [%s],", &pfd->cFileName[0] ); // file );
    //sprintf(lb, "%s,", &pfd->cFileName[0] ); // file );
-   sprintf(EndBuf(lb), " %I64d bytes, ", li.QuadPart);
+   sprintf(EndBuf(lb), " %s bytes, ", Get_I64_Stg(li.QuadPart));
    strcat(lb, GetFDTStg( &pfd->ftLastWriteTime ));
 }
 

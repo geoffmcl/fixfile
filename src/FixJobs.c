@@ -1149,15 +1149,15 @@ BOOL  DoJobs( PTSTR lpf )
 
 #ifdef USE_64_BITS
    ulib.QuadPart = pmf->sliSize.QuadPart;
-   sprtf( "Processing %s of %I64u bytes ..."MEOR,
+   sprtf( "Processing %s of %s bytes ..."MEOR,
                GetShortName(lpf,40),
-               ulib );
+       Get_I64_Stg(ulib.QuadPart));
    uli.QuadPart  = 0;
    for( ; uli.QuadPart < ulib.QuadPart; uli.QuadPart++ )
 #else // !#ifdef USE_64_BITS
-   sprtf( "Processing %s of %I64u bytes ..."MEOR,
+   sprtf( "Processing %s of %s bytes ..."MEOR,
                GetShortName(lpf,40),
-               pmf->sliSize.QuadPart );
+       Get_I64_Stg(pmf->sliSize.QuadPart) );
    uli  = 0;
    for( ; uli < ulib; uli++ )
 #endif // #ifdef USE_64_BITS y/n
@@ -1668,14 +1668,14 @@ BOOL  DoJobs( PTSTR lpf )
       }
 
 #ifdef USE_64_BITS
-      sprtf( "Done file %s of %I64u bytes, lines %d."MEOR,
+      sprtf( "Done file %s of %s bytes, lines %d."MEOR,
          GetShortName(lpf,40),
-         ulib,
+          Get_I64_Stg(ulib.QuadPart),
          linecnt );
 #else // !#ifdef USE_64_BITS
-      sprtf( "Done file %s of %u bytes, lines %d."MEOR,
+      sprtf( "Done file %s of %s bytes, lines %d."MEOR,
          GetShortName(lpf,40),
-         ulib,
+          Get_I64_Stg(ulib),
          linecnt );
 #endif // #ifdef USE_64_BITS y/n
       sprtf( "Added %d, discarded %d, converted %d bytes. Lines now %d"MEOR,

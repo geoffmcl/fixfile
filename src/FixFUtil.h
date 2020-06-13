@@ -136,5 +136,8 @@ extern TCHAR g_szActExt[]; // [_MAX_EXT]; // in stdlib.h ...
 extern void SetGlobalFileNames( PTSTR pfile );
 // *******************
 
+extern char* Get_I64_Stg(__int64 num);
+
+
 #endif	// _FixFUtil_H
 // eof - FixFUtil.h

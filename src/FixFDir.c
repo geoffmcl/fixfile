@@ -413,8 +413,8 @@ void  _setyougest( PLE ph )
    }
    {
       LPTSTR lpb = GetNxtBuf();
-      sprintf(lpb, "Max = %I64d and Min = %I64d",
-         liMax.QuadPart, liMin.QuadPart );
+      sprintf(lpb, "Max = %s and Min = %s",
+         Get_I64_Stg(liMax.QuadPart), Get_I64_Stg(liMin.QuadPart) );
    }
    // hmmm, with the MIN and MAX values, should be able to compute RANK
    {

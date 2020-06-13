@@ -5,6 +5,8 @@
 // Function List:
 // 
 // ==================================================================
+#include <sys/types.h>
+#include <sys/stat.h>
 #include	"FixF32.h"
 //#include  "FixFUtil.h"
 
@@ -869,6 +871,38 @@ PRL  InrList( LPTSTR lpl, DWORD dwLen )
 //#define  IS_FOLDER   2
 //#define  IS_WILD     4
 ///////////////////////////////////////////////////////////////////////////////
+#ifdef USE_COMP_FIO
+#ifdef _WIN32
+#define M_IS_DIR _S_IFDIR
+#else // !_MSC_VER
+#define M_IS_DIR S_IFDIR
+#endif
+
+DWORD  IsValidFile4(LPTSTR lpf, PWIN32_FIND_DATA pfd)
+{
+    DWORD     flg = 0;
+    struct stat buf;
+    if (stat(lpf, &buf) == 0) {
+        if (buf.st_mode & M_IS_DIR)
+            flg = IS_FOLDER;
+        else
+            flg = IS_FILE;
+        strcpy(pfd->cFileName, lpf);
+//#ifdef _WIN64
+//        pfd->nFileSizeHigh = buf.st_size >> 32;
+//#else
+        pfd->nFileSizeHigh = 0;
+//#endif
+        pfd->nFileSizeLow = buf.st_size & 0xFFFFFFFF;
+        pfd->ftLastWriteTime.dwHighDateTime = buf.st_mtime >> 32;
+        pfd->ftLastWriteTime.dwLowDateTime = buf.st_mtime & 0xFFFFFFFF;
+        //pfd->ftCreationTime = pfd->ftLastWriteTime;
+        //pfd->ftLastAccessTime = pfd->ftLastWriteTime;
+    }
+    return flg;
+
+}
+#else // !USE_COMP_FIO
 DWORD  IsValidFile4( LPTSTR lpf, PWIN32_FIND_DATA pfd )
 {
    DWORD     flg = 0;
@@ -890,7 +924,7 @@ DWORD  IsValidFile4( LPTSTR lpf, PWIN32_FIND_DATA pfd )
    }
    return flg;
 }
-
+#endif // USE_COMP_FIO y/n
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1844,7 +1878,10 @@ LPTSTR   FLeft( LPTSTR lps )
    was BumpFile.C -- Bridge for Windows
                (c) Geoff McLane, 1995 - 2000
   ---------------------------------------*/
+#ifdef _MSC_VER
 #pragma message ( "Public BumpFileName." )
+#endif
+
 VOID	BumpFileName( LPTSTR lps )
 {
 	int	i, j, k;
@@ -2128,5 +2165,48 @@ BOOL	grmlib_SplitExt( LPSTR lpb, LPSTR lpe, LPSTR lpf )
 	return	flg;
 }
 
+char* get_nn(char* num) // nice number nicenum add commas
+{
+    char* cp = GetNxtBuf();
+    size_t len = strlen(num);
+    size_t ii, jj, kk, out;
+    if (len <= 3) {
+        strcpy(cp, num);
+    }
+    else {
+        ///if (len > 3) {
+        size_t mod = len % 3;
+        size_t max = (int)(len / 3);
+        ii = 0;
+        for (; ii < mod; ii++) {
+            cp[ii] = num[ii]; // copy in upper numbers, if any
+        }
+        cp[ii] = 0;
+        out = ii;
+        for (jj = 0; jj < max; jj++) {
+            if (!((mod == 0) && (jj == 0)))
+                cp[out++] = ',';    // add in comma
+            for (kk = 0; kk < 3; kk++) {
+                // then 3 numbers
+                cp[out++] = num[ii + (jj * 3) + kk];
+            }
+        }
+        cp[out] = 0;
+    }
+    return cp;
+}
+
+
+char* Get_I64_Stg(__int64 num)
+{
+    char* cp = GetNxtBuf();
+#if defined(_WIN32) && !defined(USE_COMP_FIO)
+    sprintf(cp, "%I64d", num);
+#else
+    sprintf(cp, "%lld", num);
+#endif
+    cp = get_nn(cp);
+    return cp;
+}
 
 // eof - FixFUtil.c

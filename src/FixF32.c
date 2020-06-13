@@ -465,7 +465,7 @@ VOID  ShowWL( VOID )
          {
          case IS_FILE:
             lpt = "File";
-            sprintf( lpd, "%I64u", li.QuadPart );
+            sprintf( lpd, "%s", Get_I64_Stg(li.QuadPart));
             break;
          case IS_FOLDER:
             lpt = "Folder";
@@ -492,7 +492,6 @@ DWORD ExpandList( PLE pHead )
    DWORD    dwc = 0;
    PLE      pNext;
    PWL      pwl;
-   MYHAND   hFind;
    LPTSTR   lpf = &gszName[0];
    PWIN32_FIND_DATA  pfd = &gsFD;
    LPTSTR   lpn = &gszFolder[0];
@@ -513,8 +512,10 @@ DWORD ExpandList( PLE pHead )
             strcpy(lpf, &pwl->wl_szFull[0]);
             strcat(lpf, "\\*.*" );
          }
+#ifdef EXPAND_DIR_LIST
          if( *lpf )
          {
+            MYHAND   hFind;
             hFind = FindFirstFile( lpf, pfd );
             if( VFH(hFind) )
             {
@@ -531,6 +532,7 @@ DWORD ExpandList( PLE pHead )
             }
             FindClose( hFind );
          }
+#endif // EXPAND_DIR_LIST
          pwl->wl_dwFlag |= wlf_DnExp;
       }
    }
@@ -1789,9 +1791,9 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
       if( Pgm_Flag & Do_Geoff1 )
          pt = "-g1";
       if( VERB1 ) {
-         sprtf( "Doing file %s of %I64u bytes with %s flag."MEOR,
+         sprtf( "Doing file %s of %s bytes with %s flag."MEOR,
                   GetShortName(lpf,40),
-                  li,
+             Get_I64_Stg(li.QuadPart),
                   pt );
       }
 
@@ -1849,26 +1851,26 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
        }
        if (Pgm_Flag & Do_Funcs) {
            if (VERB1) {
-               sprtf("Doing file %s of %I64u bytes with -f flag."MEOR,
+               sprtf("Doing file %s of %s bytes with -f flag."MEOR,
                    GetShortName(lpf, 40),
-                   li);
+                   Get_I64_Stg(li.QuadPart));
            }
            bRet = Out_Funcs(lpb, dws, lpf);
            //            } else if( Pgm_Flag & Rem_HTML ) {  // Add working with HTML
        }
        else if (Pgm_Flag & (Rem_HTML | Add_HTML)) {  // FIX20041107
            if (VERB1) {
-               sprtf("Doing file %s of %I64u bytes with -h flag."MEOR,
+               sprtf("Doing file %s of %s  bytes with -h flag."MEOR,
                    GetShortName(lpf, 40),
-                   li);
+                   Get_I64_Stg(li.QuadPart));
            }
            bRet = Do_HTML(lpb, dws, lpf);
        }
        else if (Pgm_Flag & Fix_DIR) {
            if (VERB1) {
-               sprtf("Doing file %s of %I64u bytes with -w flag."MEOR,
+               sprtf("Doing file %s of %s bytes with -w flag."MEOR,
                    GetShortName(lpf, 40),
-                   li);
+                   Get_I64_Stg(li.QuadPart));
            }
            bRet = Do_Dir(lpb, dws, lpf);
 #ifdef ADD_TXT2VC // FIX20050203 - add -c - output C/C++ text form
@@ -1880,9 +1882,9 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
        }
        else {
            if (VERB1) {
-               sprtf("Doing file %s of %I64u bytes, max=%d sp=%s."MEOR,
+               sprtf("Doing file %s of %s bytes, max=%d sp=%s."MEOR,
                    GetShortName(lpf, 26),
-                   li,
+                   Get_I64_Stg(li.QuadPart),
                    g_dwMaxLine,
                    ((Pgm_Flag & Fix_LS) ? "On" : "Off"));    // try to break the line only on a SPACE
            }
@@ -1939,24 +1941,24 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
          {
             if( Pgm_Flag & Do_Funcs ) {
                if( VERB1 ) {
-                  sprtf( "Doing file %s of %I64u bytes with -f flag."MEOR,
+                  sprtf( "Doing file %s of %s bytes with -f flag."MEOR,
                            GetShortName(lpf,40),
-                           li );
+                            Get_I64_Stg( li.QuadPart) );
                }
                bRet = Out_Funcs( lpb, dws, lpf );
 //            } else if( Pgm_Flag & Rem_HTML ) {  // Add working with HTML
             } else if( Pgm_Flag & (Rem_HTML|Add_HTML) ) {  // FIX20041107
                if( VERB1 ) {
-                  sprtf( "Doing file %s of %I64u bytes with -h flag."MEOR,
+                  sprtf( "Doing file %s of %s bytes with -h flag."MEOR,
                            GetShortName(lpf,40),
-                           li );
+                           Get_I64_Stg(li.QuadPart));
                }
                bRet = Do_HTML( lpb, dws, lpf );
             } else if( Pgm_Flag & Fix_DIR ) {
                if( VERB1 ) {
-                  sprtf( "Doing file %s of %I64u bytes with -w flag."MEOR,
+                  sprtf( "Doing file %s of %s bytes with -w flag."MEOR,
                            GetShortName(lpf,40),
-                           li );
+                           Get_I64_Stg(li.QuadPart));
                }
                bRet = Do_Dir( lpb, dws, lpf );
 #ifdef ADD_TXT2VC // FIX20050203 - add -c - output C/C++ text form
@@ -1966,9 +1968,9 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
 #endif // #ifdef ADD_TXT2VC // FIX20050203 - add -c - output C/C++ text form
             } else {
                if( VERB1 ) {
-                  sprtf( "Doing file %s of %I64u bytes, max=%d sp=%s."MEOR,
+                  sprtf( "Doing file %s of %s bytes, max=%d sp=%s."MEOR,
                            GetShortName(lpf,26),
-                           li,
+                      Get_I64_Stg(li.QuadPart),
                            g_dwMaxLine,
                            (( Pgm_Flag & Fix_LS ) ? "On" : "Off" ) );    // try to break the line only on a SPACE
                }
@@ -1998,9 +2000,9 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
                      lpo = "Standard Out";
                }
 
-               sprtf( "Done file %s of %I64u bytes."MEOR,
+               sprtf( "Done file %s of %s bytes."MEOR,
                   GetShortName(lpf,40),
-                  li );
+                   Get_I64_Stg(li.QuadPart));
                sprintf(pMsg, "Added %d", gAdded);
                if( gConverted )
                   sprintf(EndBuf(pMsg), ", Converted %d", gConverted);
@@ -2116,14 +2118,14 @@ INT  ProcessFiles( VOID )
             li.HighPart = pwl->wl_sFD.nFileSizeHigh;
             li.LowPart  = pwl->wl_sFD.nFileSizeLow;
             if( VERB9 ) {
-               sprtf( MEOR"Processing %s of %I64u bytes ...(%d of %d)"MEOR,
+               sprtf( MEOR"Processing %s of %s bytes ...(%d of %d)"MEOR,
                   lpf,
-                  li,
+                   Get_I64_Stg(li.QuadPart),
                   dwn, dwc );
             } else {
-               sprtf( MEOR"Processing %s of %I64u bytes ...(%d of %d)"MEOR,
+               sprtf( MEOR"Processing %s of %s bytes ...(%d of %d)"MEOR,
                   GetShortName(lpf,40),
-                  li,
+                   Get_I64_Stg(li.QuadPart),
                   dwn, dwc );
             }
          }
@@ -2145,9 +2147,9 @@ INT  ProcessFiles( VOID )
                }
                else
                {
-                  sprtf( "WARNING: Processing %s of %I64u bytes FAILED! (%d of %d)"MEOR,
+                  sprtf( "WARNING: Processing %s of %s bytes FAILED! (%d of %d)"MEOR,
                      GetShortName(lpf,40),
-                     li.QuadPart,
+                     Get_I64_Stg(li.QuadPart),
                      dwn, dwc );
                }
             }
@@ -2156,11 +2158,11 @@ INT  ProcessFiles( VOID )
                LPTSTR   lpm = &gszMsgBuf[0];
                INT      i;
                //LPTSTR   lpt = &gszTmpBuf[0];
-               sprintf(lpm, "ERROR while processing file %s of %I64u bytes."MEOR
+               sprintf(lpm, "ERROR while processing file %s of %s bytes."MEOR
                   "ERROR value is %d!"MEOR
                   "This is file %d of a set of %d."MEOR
                   "Continue processing the list?",
-                  lpf, li.QuadPart,
+                  lpf, Get_I64_Stg(li.QuadPart),
                   gdwError,
                   dwn, dwc );
 
