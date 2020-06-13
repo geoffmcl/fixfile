@@ -96,6 +96,8 @@ endif()
 
 # src EXECUTABLE from [src],
 # have 19 C/C++ sources, 17 headers
+# others - ${dir}/GetLine1.c - ${dir}/rgbtrans.c     ${dir}/image2.h
+#    ${dir}/jobfile.cxx     ${dir}/jobfile.hxx     ${dir}/jobfile.h
 set(name fixfile)
 set(dir src)
 set(${name}_SRCS
@@ -113,9 +115,6 @@ set(${name}_SRCS
     ${dir}/FixJobs.c
     ${dir}/FixVC.c
     ${dir}/FixXML.c
-    ${dir}/GetLine1.c
-    ${dir}/jobfile.cxx
-    ${dir}/rgbtrans.c
     )
 set(${name}_HDRS
     ${dir}/FixF32.h
@@ -132,9 +131,6 @@ set(${name}_HDRS
     ${dir}/FixGeoff.h
     ${dir}/FixVC.h
     ${dir}/FixXML.h
-    ${dir}/image2.h
-    ${dir}/jobfile.h
-    ${dir}/jobfile.hxx
     )
 add_executable( ${name} ${${name}_SRCS} ${${name}_HDRS} )
 if (add_LIBS)
