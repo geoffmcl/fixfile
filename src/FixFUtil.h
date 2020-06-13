@@ -1,8 +1,8 @@
-
-
 // FixFUtil.h
 #ifndef	_FixFUtil_H
 #define	_FixFUtil_H
+
+#include "FixFVers.h" // version, and other FIRST things
 
 #ifdef _WIN32
 #define MCDECL _cdecl
@@ -22,9 +22,12 @@
 #define	VERB8		( giVerbose > 7 )
 #define	VERB9		( giVerbose > 8 )
 
-#define	VFHO(hf)	( ( hf ) && ( hf != HFILE_ERROR ) )
+#ifdef USE_COMP_FIO
+#define VFH(a) ( a )
+#else // !USE_COMP_FIO
 #define  VFH(h)   ( ( h ) && ( h != INVALID_HANDLE_VALUE ) )
-
+//#define	VFHO(hf)	( ( hf ) && ( hf != HFILE_ERROR ) )
+#endif // USE_COMP_FIO
 #define	IF_VERB2( _x_ )		if( VERB2 ) { _x_ }
 
 #define  wlf_DnExp      0x00000001
@@ -79,7 +82,7 @@ extern   VOID  MCDECL chkme( LPTSTR lpf, ... );
 
 extern   VOID  DiagOpen( VOID );
 extern   VOID  DiagClose( VOID );
-extern   __int64 MyFileSeek( HANDLE hf, __int64 distance, DWORD MoveMethod );
+extern   __int64 MyFileSeek( MYHAND hf, __int64 distance, DWORD MoveMethod );
 
 extern	PWL   Add2WLList( LPTSTR lpf );
 extern   PXL   Add2XLList( LPTSTR lpf );

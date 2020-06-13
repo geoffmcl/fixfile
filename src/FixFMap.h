@@ -9,8 +9,8 @@
 // file mapping structure
 typedef  struct   tagMPDFIL {
    LPTSTR   pName;   // name of file
-   HANDLE   hFile;   // file handle
-   HANDLE   hMap;    // map handle
+   MYHAND   hFile;   // file handle
+   MYHAND   hMap;    // map handle
    ULARGE_INTEGER sliSize;   // size of file data
    LPTSTR   pData;   // pointer to file data
 }MPDFIL, * PMPDFIL;

@@ -7,8 +7,8 @@
 
 //typedef  struct   tagMPDFIL {
 //   LPTSTR   pName;   // name of file
-//   HANDLE   hFile;   // file handle
-//   HANDLE   hMap;    // map handle
+//   MYHAND   hFile;   // file handle
+//   MYHAND   hMap;    // map handle
 //   ULARGE_INTEGER sliSize;   // size of file data
 //   LPTSTR   pData;   // pointer to file data
 //}MPDFIL, * PMPDFIL;
@@ -32,8 +32,8 @@ VOID  DeleteFileMap( PMPDFIL pmf )
 PMPDFIL  GetFileMap( LPTSTR lpf )
 {
    PMPDFIL  pmf = 0;
-   HANDLE   h   = 0;
-   HANDLE   hm  = 0;
+   MYHAND   h   = 0;
+   MYHAND   hm  = 0;
    LPTSTR   lpb = 0;
    if(lpf && *lpf)
    {

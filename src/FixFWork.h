@@ -53,15 +53,15 @@ typedef struct {
    DWORD    ws_dwSize;     // gdwSize
 	int		ws_iVerbose;
 
-   HANDLE   ws_hStdOut;    // ghStdOut = Standard out
-   HANDLE   ws_hErrOut;    // ghErrOut = Error out
+   MYHAND   ws_hStdOut;    // ghStdOut = Standard out
+   MYHAND   ws_hErrOut;    // ghErrOut = Error out
 
    BOOL     ws_bRedON;     // gbRedON = being redirected - use stderr for output
    DWORD    ws_dwMode;     // gdwMode
    BOOL     ws_UnifDiff;   // gbUnifDiff
    BOOL     ws_DelBOM;      // gbDelBOM
 
-   HANDLE   ws_Out_Hand;   // gOut_Hand = FILE if any given
+   MYHAND   ws_Out_Hand;   // gOut_Hand = FILE if any given
 
    DWORD    ws_dwError;    // gdwError
 

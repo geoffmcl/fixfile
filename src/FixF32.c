@@ -57,7 +57,7 @@ DWORD    Out_TFS = 0;   // Out_TFS2	label word
 #endif   // ; AddSplit
 
 // forward references
-BOOL  Setup( VOID );    // allocate and SET work memory
+BOOL  Setup(int argc, char* argv[]);    // allocate and SET work memory
 BOOL  Get_O_File( VOID );
 
 static TCHAR	sszInp[] = "InputFile";
@@ -111,8 +111,8 @@ int	GetNum( LPSTR lps, int	mx )
 
 VOID  Close_O_File( VOID )
 {
-#ifdef _WIN32
-   if( VFH( gOut_Hand ) )   //		; Get OUT handle
+#if defined(_WIN32) && !defined(USE_COMP_FIO)
+    if( VFH( gOut_Hand ) )   //		; Get OUT handle
       CloseHandle(gOut_Hand);
 #else
     if (VFH(gOut_Hand))   //		; Get OUT handle
@@ -164,15 +164,15 @@ VOID  Add_TEMPE( LPTSTR lpr )
 
 ///////////////////////////////////////////////////////////////////////////////
 // FUNCTION   : Open_A_File
-// Return type: HANDLE 
+// Return type: MYHAND 
 // Argument   : LPTSTR lpf
 // Description: Open a file with READ ONLY
-//              Return ZERO if failed, else the active HANDLE
+//              Return ZERO if failed, else the active MYHAND
 ///////////////////////////////////////////////////////////////////////////////
-HANDLE  Open_A_File( LPTSTR lpf )
+MYHAND  Open_A_File( LPTSTR lpf )
 {
-    HANDLE h = 0;
-#ifdef _WIN32
+    MYHAND h = 0;
+#if defined(_WIN32) && !defined(USE_COMP_FIO)
    h = CreateFile( lpf, // file name
          (GENERIC_READ | GENERIC_WRITE),  // access mode
          FILE_SHARE_READ,  // share mode
@@ -189,10 +189,10 @@ HANDLE  Open_A_File( LPTSTR lpf )
    return h;
 }
 
-HANDLE   Creat_A_File( LPTSTR lpf )
+MYHAND   Creat_A_File( LPTSTR lpf )
 {
-    HANDLE h = 0;
-#ifdef _WIN32
+    MYHAND h = 0;
+#if defined(_WIN32) && !defined(USE_COMP_FIO)
     h = CreateFile( lpf, // file name
          (GENERIC_READ | GENERIC_WRITE),  // access mode
          FILE_SHARE_READ,  // share mode
@@ -209,10 +209,10 @@ HANDLE   Creat_A_File( LPTSTR lpf )
    return h;
 }
 
-BOOL  Do_File_Create( LPTSTR lpf, PHANDLE ph )
+BOOL  Do_File_Create( LPTSTR lpf, PMYHAND ph )
 {
    BOOL  bRet = FALSE;
-   HANDLE h = Creat_A_File( lpf );
+   MYHAND h = Creat_A_File( lpf );
    if( VFH(h) )
    {
       if(ph)
@@ -229,7 +229,7 @@ BOOL  Get_O_File( VOID )
    BOOL  bRet = FALSE;  // no problem yet
    BOOL fApd = (Pgm_Flag & GotAppe); // Mark the appending
    LPTSTR   lpf = &gszOFName[0];
-   HANDLE   h;
+   MYHAND   h;
    if( fApd )
    {
       LARGE_INTEGER  li;
@@ -270,6 +270,7 @@ Do_Create:
 //; Init Uninitialised Data Segment
 VOID  Do_Init( VOID )
 {
+    MYHAND h;
 //	; Items to INIT'ed to ZERO
 //	; ========================
    Out_FSiz = 0;  // 1 	Mov	Out_FSiz2,Ax
@@ -284,6 +285,7 @@ VOID  Do_Init( VOID )
 //	; Other items it initialise
 //	; =========================
 //	Inc	Ax
+    h = GetStdHandle(STD_OUTPUT_HANDLE);
    ghStdOut = GetStdHandle( STD_OUTPUT_HANDLE );   // Standard out
    ghErrOut = GetStdHandle( STD_ERROR_HANDLE  );   // error out
    if( VFH(ghStdOut) )
@@ -308,14 +310,24 @@ VOID  Do_Init( VOID )
 
 // allocate and SET work memory -    Setup();    // intial SETUP
 // ============================
-BOOL  Setup( VOID )
+BOOL  Setup(int argc, char* argv[])
 {
    BOOL  bRet = FALSE;
 	gpW = MALLOC( sizeof(WRK) );
 	if( gpW )
 	{
+#if defined(_WIN32) && !defined(USE_COMP_FIO)
 		ZeroMemory( gpW, sizeof(WRK) );
-      DiagOpen();
+#else // !_WIN32
+        memset(gpW, 0, sizeof(WRK));
+#endif // _WIN32 y/n
+        gcArgs = argc;
+        gpArgv = argv;
+
+        DiagOpen();
+        ghStdOut = (MYHAND)0x0c;   // 1 Standard out
+        ghErrOut = (MYHAND)2;   // error out
+
       sprtf( "Begin FixF32 with %d bytes of work memory."MEOR, sizeof(WRK) );
       gdwSize = sizeof(WRK);  //  W.ws_dwSize    // ALLOCATION SIZE
 
@@ -470,7 +482,7 @@ DWORD ExpandList( PLE pHead )
    DWORD    dwc = 0;
    PLE      pNext;
    PWL      pwl;
-   HANDLE   hFind;
+   MYHAND   hFind;
    LPTSTR   lpf = &gszName[0];
    PWIN32_FIND_DATA  pfd = &gsFD;
    LPTSTR   lpn = &gszFolder[0];
@@ -550,7 +562,7 @@ DWORD ExpandList( PLE pHead )
 
 BOOL  ChangeOUTFile( VOID )
 {
-   HANDLE   h;
+   MYHAND   h;
    LPTSTR   lpn, lpc, lpp;  // = GetNxtBuf();   // get a buffer
    INT      i;
    char *   cp;
@@ -608,13 +620,19 @@ BOOL  outit( LPTSTR lpb, DWORD dwLen )
 {
    static BOOL _s_sptfld = FALSE;
    DWORD    dww;
-   HANDLE   h;
-   BOOL     bRet;
+   MYHAND   h;
+   BOOL     bRet = FALSE;
 
    h = gOut_Hand;    // get active OUTPUT handle
    if( VFH(h) )
    {
+#ifdef USE_COMP_FIO
+       dww = fwrite(lpb, 1, dwLen, h);
+       if (dwLen == dww)
+           bRet = TRUE;
+#else // !USE_COMP_FIO
       bRet = WriteFile(h, lpb, dwLen, &dww, NULL);
+#endif // USE_COMP_FIO
       gdwWritten += dwLen;
       if(( Pgm_Flag & Do_Split ) &&   // we have at least -s
          ( g_dwSp_Sz           ) )
@@ -1750,7 +1768,7 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
 {
    BOOL           bRet = FALSE;  // begin with failed
    LARGE_INTEGER  li;
-   HANDLE         h = 0;
+   MYHAND         h = 0;
    DWORD          dws;
 
    li.HighPart = pwl->wl_sFD.nFileSizeHigh;
@@ -1787,12 +1805,100 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
    }
 
 #endif // #ifdef  ADDJOBS1   // -j 22 Jan. 2004
-//   li.HighPart = pwl->wl_sFD.nFileSizeHigh;
-//   li.LowPart  = dws = pwl->wl_sFD.nFileSizeLow;
-   if(dws == 0)   // a million and 1 chance
+
+#ifdef USE_COMP_FIO
+   if (dws)
    {
-      if( li.HighPart )
-         dws--;
+       h = fopen(lpf, "r");
+   }
+   else {
+       if (VERB1) {
+           sprtf("WARNING: Nothing in file '%s' to process!"MEOR, lpf);
+       }
+       return FALSE;
+   }
+   if (VFH(h))
+   {
+       size_t len = dws + 1;
+       LPTSTR lpb = (LPTSTR)MALLOC(len);
+       if (!lpb) {
+           if (VERB1) {
+               sprtf("WARNING: Memory allocation failed, for file '%s'!"MEOR, lpf);
+           }
+           fclose(h);
+           return FALSE;
+       }
+       len = fread(lpb, 1, dws, h);
+       fclose(h);
+       if (len != dws) {
+           if (VERB1) {
+               sprtf("WARNING: File '%s' read failed!"MEOR, lpf);
+           }
+           MFREE(lpb);
+           return FALSE;
+       }
+       if (Pgm_Flag & Do_Funcs) {
+           if (VERB1) {
+               sprtf("Doing file %s of %I64u bytes with -f flag."MEOR,
+                   GetShortName(lpf, 40),
+                   li);
+           }
+           bRet = Out_Funcs(lpb, dws, lpf);
+           //            } else if( Pgm_Flag & Rem_HTML ) {  // Add working with HTML
+       }
+       else if (Pgm_Flag & (Rem_HTML | Add_HTML)) {  // FIX20041107
+           if (VERB1) {
+               sprtf("Doing file %s of %I64u bytes with -h flag."MEOR,
+                   GetShortName(lpf, 40),
+                   li);
+           }
+           bRet = Do_HTML(lpb, dws, lpf);
+       }
+       else if (Pgm_Flag & Fix_DIR) {
+           if (VERB1) {
+               sprtf("Doing file %s of %I64u bytes with -w flag."MEOR,
+                   GetShortName(lpf, 40),
+                   li);
+           }
+           bRet = Do_Dir(lpb, dws, lpf);
+#ifdef ADD_TXT2VC // FIX20050203 - add -c - output C/C++ text form
+       }
+       else if (Pgm_Flag & VC_Out) {
+           bRet = Do_VC(lpb, dws, lpf);
+           //   dmsg( " -c[name]   Output as single C/C++ text form."MEOR );
+#endif // #ifdef ADD_TXT2VC // FIX20050203 - add -c - output C/C++ text form
+       }
+       else {
+           if (VERB1) {
+               sprtf("Doing file %s of %I64u bytes, max=%d sp=%s."MEOR,
+                   GetShortName(lpf, 26),
+                   li,
+                   g_dwMaxLine,
+                   ((Pgm_Flag & Fix_LS) ? "On" : "Off"));    // try to break the line only on a SPACE
+           }
+
+           // case 'B': -b
+           if (Pgm_Flag & BS_Dup) {
+               bRet = Do_Bin_Buffer(lpb, dws);
+           }
+           else {
+               bRet = Do_Buffer(lpb, dws);
+           }
+       }
+       MFREE(lpb);
+   }
+   else {
+       if (VERB1) {
+           sprtf("WARNING: Failed to open [%s] file!"MEOR, lpf);
+       }
+   }
+#else // !USE_COMP_FIO
+   //   li.HighPart = pwl->wl_sFD.nFileSizeHigh;
+   //   li.LowPart  = dws = pwl->wl_sFD.nFileSizeLow;
+   if (dws == 0)   // a million and 1 chance
+   {
+       if (li.HighPart)
+           dws--;
    }
    if(dws)
    {
@@ -1806,7 +1912,7 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
    }
    if( VFH(h) )
    {
-      HANDLE hm = CreateFileMapping( h,	// handle to file to map 
+      MYHAND hm = CreateFileMapping( h,	// handle to file to map 
 			NULL,	// optional security attributes
 			g_flProtext,	// protection for mapping object
 			0,				// high-order 32 bits of object size
@@ -1953,6 +2059,8 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
          sprtf( "WARNING: Nothing in file to process!"MEOR, lpf );
       }
    }
+
+#endif // USE_COMP_FIO
    return bRet;
 }
 
@@ -2089,7 +2197,7 @@ int	main( int argc, char * argv[] )
 {
    int   i = 0;
 
-   Setup();    // intial SETUP
+   Setup(argc,argv);    // intial SETUP
    if( argc > 1 )
    {
       gcArgs = argc;
@@ -2176,7 +2284,7 @@ int	main( int argc, char * argv[] )
 #include <sys/timeb.h>
 #include <string.h>
 
-void main()
+void main(int argc, char* argv[])
 {
    int i = 0;
     char tmpbuf[128], ampm[] = "AM";
@@ -2188,7 +2296,7 @@ void main()
      * the operating system is queried to obtain the default value 
      * for the variable. 
      */
-    Setup();
+    Setup(argc, argv);
     _tzset();
 
     /* Display operating system-style date and time. */

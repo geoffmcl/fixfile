@@ -19,7 +19,7 @@ void  DO(PTSTR a); // do output
 static   TCHAR    s_szSprtfBuf[1024];
 TCHAR    g_szDiagDef[] = "TEMPFIXF.TXT";  // only ONE
 TCHAR    g_szNextFile[264];
-HANDLE   g_hDiagFile = 0;
+MYHAND   g_hDiagFile = 0;
 
 VOID  MCDECL chkme( LPTSTR lpf, ... )
 {
@@ -138,7 +138,15 @@ VOID  SetNextDiag( VOID )
    // Used to use the CURRENT WORK DIRECTORY, rather than where the EXE is ...
    // but later changed to where the EXE is - less mess around the disk
    LPTSTR   lpf = &g_szNextFile[0];
+   *lpf = 0;
+   // gpArgv = argv;
+#ifdef USE_COMP_FIO
+   // maybe could use gpArgv
+#else 
+#ifdef _WIN32
    GetModulePath( lpf );
+#endif
+#endif
    strcat( lpf, g_szDiagDef );
 }
 
@@ -147,6 +155,9 @@ VOID  DiagOpen( VOID )
 //   ReadINI();
    SetNextDiag();
    // Create file each time
+#ifdef USE_COMP_FIO
+   g_hDiagFile = fopen(g_szNextFile, "w");
+#else
    g_hDiagFile = CreateFile( g_szNextFile, // file name
       (GENERIC_READ | GENERIC_WRITE),  // access mode
       0,  // share mode
@@ -154,14 +165,20 @@ VOID  DiagOpen( VOID )
       CREATE_ALWAYS, // how to create
       FILE_ATTRIBUTE_NORMAL,  // file attributes
       0 ); // handle to template file
+#endif
 }
 
 VOID  DiagClose( VOID )
 {
 //   WriteINI();
-   if( VFH(g_hDiagFile) )
-      CloseHandle(g_hDiagFile);
-   g_hDiagFile = 0;
+    if (VFH(g_hDiagFile)) {
+#ifdef USE_COMP_FIO
+        fclose(g_hDiagFile);
+#else
+        CloseHandle(g_hDiagFile);
+#endif
+    }
+    g_hDiagFile = 0;
 
 }
 
@@ -172,12 +189,19 @@ VOID  DiagString( LPTSTR lps )
    if( ( dwi              ) &&
        ( VFH(g_hDiagFile) ) )
    {
-      if( !( ( WriteFile( g_hDiagFile, lps, dwi, &dww, NULL ) ) &&
+#ifdef USE_COMP_FIO
+       dww = fwrite(lps, 1, dwi, g_hDiagFile);
+       if (dww != dwi) {
+           DiagClose();
+       }
+#else
+       if( !( ( WriteFile( g_hDiagFile, lps, dwi, &dww, NULL ) ) &&
              ( dwi == dww                                   ) ) )
       {
          DiagClose();
          g_hDiagFile = INVALID_HANDLE_VALUE;
       }
+#endif
    }
 }
 
@@ -360,8 +384,20 @@ void SetGlobalFileNames( PTSTR pfile )
 #define INVALID_SET_FILE_POINTER ((DWORD)-1)
 #endif // #ifndef INVALID_SET_FILE_POINTER
 
-__int64 MyFileSeek (HANDLE hf, __int64 distance, DWORD MoveMethod)
+/*
+   1 SEEK_SET Beginning of file
+   2 SEEK_CUR Current position of the file pointer
+   3 SEEK_END End of file
+ */
+
+__int64 MyFileSeek (MYHAND hf, __int64 distance, DWORD MoveMethod)
 {
+#ifdef USE_COMP_FIO
+    int res = fseek(hf, distance, MoveMethod);
+    if (res)
+        return (__int64)-1;
+    return distance;
+#else // !USE_COMP_FIO
    LARGE_INTEGER li;
 
    li.QuadPart = distance;
@@ -374,6 +410,7 @@ __int64 MyFileSeek (HANDLE hf, __int64 distance, DWORD MoveMethod)
    }
 
    return li.QuadPart;
+#endif // USE_COMP_FIO
 }
 
 
@@ -835,7 +872,7 @@ PRL  InrList( LPTSTR lpl, DWORD dwLen )
 DWORD  IsValidFile4( LPTSTR lpf, PWIN32_FIND_DATA pfd )
 {
    DWORD     flg = 0;
-   HANDLE   hFind;
+   MYHAND   hFind;
    WIN32_FIND_DATA   fd;
    hFind = FindFirstFile( lpf, pfd );
    if( VFH(hFind) )
@@ -914,7 +951,7 @@ VOID  gmGetFolder( LPTSTR lpd, LPTSTR lpf )
 ///////////////////////////////////////////////////////////////////////////////
 // FUNCTION   : gmSet_File_Pos
 // Return type: BOOL
-// Arguments  : HANDLE hf
+// Arguments  : MYHAND hf
 //            : LARGE_INTEGER li
 //            : DWORD dwFrom
 // Description: 
@@ -945,7 +982,7 @@ VOID  gmGetFolder( LPTSTR lpd, LPTSTR lpf )
     // . . . 
 //} // End of error handler 
 ///////////////////////////////////////////////////////////////////////////////
-BOOL  gmSet_File_Pos( HANDLE hf, LARGE_INTEGER li, DWORD dwFrom )
+BOOL  gmSet_File_Pos( MYHAND hf, LARGE_INTEGER li, DWORD dwFrom )
 {
    BOOL  bRet = FALSE;  // assume FAILED
    if( VFH(hf) )

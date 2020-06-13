@@ -5,9 +5,9 @@
 @exit /b 1
 )
 
-@set TMPFIL1=test1.txt
-@set TMPFIL2=test1u.txt
-@set TMPFIL3=test1d.txt
+@set TMPFIL1=temp1.txt
+@set TMPFIL2=temp1u.txt
+@set TMPFIL3=temp1d.txt
 
 @echo Line 1 > %TMPFIL1%
 @echo Line 2 >> %TMPFIL1%

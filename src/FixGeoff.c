@@ -58,7 +58,7 @@ VOID  RunExcell( LPTSTR lpf )
    static RUNSTR rs;
    PRUNSTR  prs = &rs;
    LPTSTR   lpexe, lpcmd, lptmp;
-   HANDLE   hFind;
+   MYHAND   hFind;
 
    ZeroMemory(prs, sizeof(RUNSTR));
 
@@ -673,36 +673,48 @@ BOOL  bNo2Commas   = TRUE;
 BOOL  bAddSpPad    = FALSE;
 BOOL  bUseArray    = FALSE;
 
-//extern   HANDLE	grmCreateFile( LPTSTR fn );
-//extern   BOOL     grmWriteFile( HANDLE * ph, LPTSTR lpb );
-//extern   BOOL     grmCloseFile( HANDLE * ph );
-BOOL     grmCloseFile( HANDLE * ph )
+//extern   MYHAND	grmCreateFile( LPTSTR fn );
+//extern   BOOL     grmWriteFile( MYHAND * ph, LPTSTR lpb );
+//extern   BOOL     grmCloseFile( MYHAND * ph );
+BOOL     grmCloseFile( MYHAND * ph )
 {
-   HANDLE   h = *ph;
+   MYHAND   h = *ph;
    if( VFH(h) )
    {
+#ifdef USE_COMP_FIO
+       fclose(h);
+#else //!USE_COMP_FIO
       CloseHandle(h);
+#endif // USE_COMP_FIO y/n
       *ph = 0;
       return TRUE;
    }
    return FALSE;
 }
 
-BOOL     grmWriteFile( HANDLE * ph, LPTSTR lpb )
+BOOL     grmWriteFile( MYHAND * ph, LPTSTR lpb )
 {
-   HANDLE   h = *ph;
+   MYHAND   h = *ph;
    if( VFH(h) )
    {
       DWORD dww;
       DWORD dwl = strlen(lpb);
       if(dwl)
       {
+#ifdef USE_COMP_FIO
+          dww = fwrite(lpb, 1, dwl, h);
+          if (dwl == dww)
+              return TRUE;
+          grmCloseFile(ph);
+          *ph = 0;
+#else // !USE_COMP_FIO
          if( WriteFile(h,lpb,dwl,&dww,NULL) && ( dwl == dww ) )
          {
             return TRUE;
          }
          grmCloseFile( ph );
          *ph = INVALID_HANDLE_VALUE;
+#endif // USE_COMP_FIO y/n
       }
       else
       {
@@ -1371,7 +1383,7 @@ void  SortList( int iCnt )
 #define  grmCreateFile  Creat_A_File
 #define  VH             VFH
 
-VOID  LineMemOut( HANDLE * ph, LPTSTR lps )
+VOID  LineMemOut( MYHAND * ph, LPTSTR lps )
 {
    static DWORD _s_dwdninit = 0;
    grmWriteFile( ph, lps );
@@ -1409,7 +1421,7 @@ void  OutLineMem( void )
    PLIST_ENTRY pListHead;
 	int	i = 0;
    int   iCnt = 0;
-   HANDLE   h = 0;
+   MYHAND   h = 0;
    LPTSTR   lps2 = glpOut2;
    LPTSTR   lpf  = &gcGOutFile[0];   // = [264] = {"\0"};
 
@@ -4422,7 +4434,7 @@ PTSTR RemoveStr( PTSTR pln, PTSTR pdel )
    return 0;
 }
 
-VOID  LineMemOut1( HANDLE * ph, LPTSTR lps )
+VOID  LineMemOut1( MYHAND * ph, LPTSTR lps )
 {
    static TCHAR _s_outbuf[1024];
    PTSTR pb = _s_outbuf;
@@ -4444,7 +4456,7 @@ VOID  OutLineMem1(VOID)
    PLE   pn;
    PTSTR lpb;
    int   iCnt = 0;
-   HANDLE   h = 0;
+   MYHAND   h = 0;
    //PTSTR   lps2 = glpOut2;
    PTSTR   lpf  = &gcGOutFile[0];   // = [264] = {"\0"};
    PTSTR pln3 = gszLineB3;  // build it into here

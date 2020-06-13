@@ -15,9 +15,18 @@ extern  "C"
 
 #include <stdio.h>
 #ifdef _WIN32
+//////////////////////////////////////////////////////////////
 #define	WIN32_MEAN_AND_LEAN
 #include	<windows.h>
 #include	<direct.h>
+#ifdef USE_COMP_FIO
+typedef FILE* MYHAND;
+typedef MYHAND* PMYHAND;
+#else // !USE_COMP_FIO
+typedef HANDLE MYHAND;
+typedef MYHAND* PMYHAND;
+#endif // USE_COMP_FIO
+//////////////////////////////////////////////////////////////
 #else // !_WIN32 == unix
 /////////////////////////////////////////////////////////////////
 #include <stdlib.h>
@@ -28,8 +37,8 @@ extern  "C"
 typedef unsigned int DWORD;
 typedef unsigned short WORD;
 typedef unsigned char BYTE;
-typedef FILE * HANDLE;
-typedef FILE ** PHANDLE;
+typedef FILE * MYHAND;
+typedef MYHAND* PMYHAND;
 typedef bool BOOL;
 typedef char * LPTSTR;
 typedef char * PTSTR;
@@ -91,9 +100,9 @@ typedef struct _WIN32_FIND_DATA {
     char  cFileName[264];
     char   cAlternateFileName[14];
 } WIN32_FIND_DATA, * PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;
-#define FILE_BEGIN 0
-#define FILE_CURRENT 1
-#define FILE_END 2
+#define FILE_BEGIN SEEK_SET // 1 Beginning of file
+#define FILE_CURRENT SEEK_CUR // 2 Current position of the file pointer1
+#define FILE_END SEEK_END // 3 End of file
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()
@@ -131,8 +140,8 @@ extern   BOOL  Chk_Remove( LPTSTR lpout, LPTSTR lpbgn, PDWORD pdw, DWORD dwLine 
 extern   DWORD Pgm_Flag;
 extern   TCHAR End_Msg[];  // = "eof\r\n";   // eof plus CR,LF
 
-extern   HANDLE  Open_A_File( LPTSTR lpf );
-extern   HANDLE   Creat_A_File( LPTSTR lpf );
+extern   MYHAND  Open_A_File( LPTSTR lpf );
+extern   MYHAND   Creat_A_File( LPTSTR lpf );
 
 
 #ifdef  __cplusplus

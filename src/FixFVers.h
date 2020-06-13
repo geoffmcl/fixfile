@@ -16,6 +16,7 @@
 #define  VersNum2    0
 #define  VersNum3    0   // FIX20200611 - make into github repo
 #define  VerDate	"11 June, 2020" // in Dell03 - MSVC16 2019 x64
+#define USE_COMP_FIO    // use unix comaptible file IO
 
 //  VersNum3    28   // FIX201227 - to -ud also remove any UTF-8 BOM
 //  VerDate	"27 March, 2012" // in Win7-PC - MSVC10 ...

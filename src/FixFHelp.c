@@ -732,7 +732,7 @@ BOOL  Get_Inp_Fil( LPTSTR lpc )
    BOOL  bRet = FALSE;   // assume fail
    if( *lpc )
    {
-      HANDLE   h = CreateFile( lpc, // file name
+      MYHAND   h = CreateFile( lpc, // file name
          GENERIC_READ,  // access mode
          FILE_SHARE_READ,  // share mode
          0, // SD
@@ -932,7 +932,7 @@ BOOL  Get_X_Inp( LPTSTR lpc )
    BOOL  bRet = FALSE;   // assume fail
    if( *lpc )
    {
-      HANDLE   h = CreateFile( lpc, // file name
+      MYHAND   h = CreateFile( lpc, // file name
          GENERIC_READ,  // access mode
          FILE_SHARE_READ,  // share mode
          0, // SD

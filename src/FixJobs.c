@@ -6,7 +6,7 @@
 // #define  Do_JobsF    0x00800000  // -jf fix job file
 // #define  Do_JobsE    0x01000000  // -je fix email tags
 // XML format
-extern BOOL grmWriteFile( HANDLE * ph, LPTSTR lpb );
+extern BOOL grmWriteFile( MYHAND * ph, LPTSTR lpb );
 extern PTSTR g_pActMetChr;
 #define MEMERR(a) if(a == 0) { chkme( "C:ERROR: We have NO MEMORY !!! EEEK !" ); }
 
@@ -501,13 +501,13 @@ void ChkJobLab( PJXML pjx )
    pjx->j_cLast = *lpb; // get any tail character
 }
 
-HANDLE g_hOutFile = 0;
+MYHAND g_hOutFile = 0;
 #define  grmCreateFile  Creat_A_File
 
 VOID CreatJOut( VOID )
 {
    LPTSTR   lpf  = &gcGOutFile[0];   // = [264] = {"\0"};
-   g_hOutFile = (HANDLE)-1;
+   g_hOutFile = (MYHAND)-1;
    if(*lpf)
       g_hOutFile = grmCreateFile( lpf );
 }
@@ -812,7 +812,7 @@ VOID Write_J_Ouput( PTSTR pline )
                    ( InStr( pline, p ) > 0 ))
 
 TCHAR g_szDiscFile[] = "tempdisc.txt";
-HANDLE   g_hDiscFile = 0;
+MYHAND   g_hDiscFile = 0;
 DWORD g_dwDelLnsS = 0;
 DWORD g_dwDelLns = 0;
 

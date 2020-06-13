@@ -119,7 +119,7 @@ int set_file_load( char * lb, char * file )
 {
    int iret = 0;
    WIN32_FIND_DATA fd;
-   HANDLE hand = FindFirstFile(file, &fd);
+   MYHAND hand = FindFirstFile(file, &fd);
    if( VFH(hand) ) {
       FindClose(hand);
       if( fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
