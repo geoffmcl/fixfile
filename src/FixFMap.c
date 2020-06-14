@@ -13,7 +13,20 @@
 //   LPTSTR   pData;   // pointer to file data
 //}MPDFIL, * PMPDFIL;
 // typedef MPDFIL *  PMF;
+#ifdef USE_COMP_FIO
 
+VOID  DeleteFileMap(PMPDFIL pmf)
+{
+    // TODO: file mapping, or aternatives
+}
+PMPDFIL  GetFileMap(LPTSTR lpf)
+{
+    PMPDFIL  pmf = 0;
+    sprtf("WARNING:TODO: Still to port file mapping, or alterantive\n");
+    return pmf;
+}
+
+#else // !#ifdef USE_COMP_FIO == use WIN32 FIO
 
 VOID  DeleteFileMap( PMPDFIL pmf )
 {
@@ -111,6 +124,7 @@ PMPDFIL  GetFileMap( LPTSTR lpf )
    return pmf;
 }
 
+#endif // #ifdef USE_COMP_FIO y/n
 
 
 

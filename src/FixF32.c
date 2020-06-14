@@ -2174,13 +2174,17 @@ INT  ProcessFiles( VOID )
                   lpf, Get_I64_Stg(li.QuadPart),
                   gdwError,
                   dwn, dwc );
-
+#ifdef USE_COMP_FIO
+               i = sprtf("%s\n", lpm);
+               break;
+#else // !USE_COMP_FIO
                i = MessageBox( NULL, lpm, "PROCESSING ERROR",
                   MB_YESNO | MB_ICONINFORMATION );
                if( i == IDNO )
                {
                   break;
                }
+#endif // #ifdef USE_COMP_FIO y/n
             }
          }
       }

@@ -105,7 +105,7 @@ typedef struct _WIN32_FIND_DATA {
 #define FILE_BEGIN SEEK_SET // 1 Beginning of file
 #define FILE_CURRENT SEEK_CUR // 2 Current position of the file pointer1
 #define FILE_END SEEK_END // 3 End of file
-#define _strnicmp strnicmp
+#define _strnicmp strncmp
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()
