@@ -912,7 +912,7 @@ PVOID   Add2FRList( LPTSTR lpf, INT flg )
          pfr = (PFR)MALLOC( sizeof(FR) );
          if( pfr )
          {
-            ZeroMemory(pfr, sizeof(FR));
+             memset(pfr, 0, (sizeof(FR)));
             strcpy( &pfr->fr_szFind[0], lpf );
             InsertTailList( &gsFndRpl, (PLE)pfr );
             _s_last = pfr;

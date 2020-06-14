@@ -391,7 +391,7 @@ VOID addLine2LineList(PSTR pline)
 
    pnl = MALLOC( sizeof(JXML) + len );
    MEMERR(pnl);
-   ZeroMemory(pnl,( sizeof(JXML) + len ));
+   memset(pnl, 0, ( sizeof(JXML) + len ));
    pjx = (PJXML)pnl;
    lpb = &pjx->j_cbuff[0];
    strcpy(lpb,pline);
@@ -552,7 +552,7 @@ void  Add2XML( PTSTR pl, DWORD line )
          //PTSTR lpb = (PTSTR)((PLE)pn + 1);
          PTSTR lpb = &pjx->j_cbuff[0];
 
-         ZeroMemory(pjx, size); // note ensure all zero start
+         memset(pjx, 0, size); // note ensure all zero start
 
 //         pjx->j_dwLine = line;   // 1, 2, 3, ... etc
 //         pjx->j_dwlevel = dwXMLOpn + 1;

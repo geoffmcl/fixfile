@@ -322,11 +322,7 @@ BOOL  Setup(int argc, char* argv[])
 	gpW = MALLOC( sizeof(WRK) );
 	if( gpW )
 	{
-#if defined(_WIN32) && !defined(USE_COMP_FIO)
-		ZeroMemory( gpW, sizeof(WRK) );
-#else // !_WIN32
         memset(gpW, 0, sizeof(WRK));
-#endif // _WIN32 y/n
         gcArgs = argc;
         gpArgv = argv;
 

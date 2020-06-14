@@ -443,7 +443,30 @@ void  _setyougest( PLE ph )
    }
 }
 
-//#define  Traverse_Cont(pListHead,pListNext)\
+long MyCompareFileTime(FILETIME * pft1, FILETIME * pft2)
+{
+    long lg = 0;
+    if (pft1->dwHighDateTime == pft2->dwHighDateTime) {
+        if (pft1->dwLowDateTime < pft2->dwLowDateTime)
+            lg = -1;
+        else if (pft1->dwLowDateTime > pft2->dwLowDateTime)
+            lg = 1;
+    }
+    else {
+        if (pft1->dwHighDateTime < pft2->dwHighDateTime)
+            lg = -1;
+        else if (pft1->dwHighDateTime > pft2->dwHighDateTime)
+            lg = 1;
+    }
+    return lg;
+}
+
+#ifndef _WIN32
+#define CompareFileTime MyCompareFileTime 
+#include <strings.h>
+#define strcmpi strcasecmp
+#endif // !_WIN32
+// #define  Traverse_Cont(pListHead,pListNext)
 //   for( pListNext = pListNext->Flink; pListNext != pListHead; pListNext = pListNext->Flink )
 
 PLE   _getyoungest( PLE ph )
@@ -1115,9 +1138,7 @@ BOOL	Do_Dir( LPTSTR pFile, DWORD dws, LPTSTR lpf )
             chkme( "C:ERROR: Get line memory FAILED! (%d bytes)"MEOR, (sizeof(LNLIST) + dwk) );
             goto Tidy_Exit;
          }
-
-         ZeroMemory(pn, (sizeof(LNLIST) + dwk));
-
+         memset(pn, 0, (sizeof(LNLIST) + dwk));
          pll = (PLNLIST)pn;   // cast to my structure
          pll->dwLn   = dwlns;  // set the line number
          pll->dwOrd  = 0;      // no order yet
@@ -1215,7 +1236,8 @@ BOOL	Do_Dir( LPTSTR pFile, DWORD dws, LPTSTR lpf )
                        }
                        if( ISNUM(*pbgn) ) {
                           LPTSTR   p = FixNum(pbgn); // remove any commas
-                          __int64 i64 = _atoi64(p);
+                          //__int64 i64 = _atoi64(p);
+                          __int64 i64 = atoi(p);
                           LARGE_INTEGER li; // = _atoi64(p);
                           li.QuadPart = i64;
                           pll->dwSize = li.LowPart; // atoi(p);

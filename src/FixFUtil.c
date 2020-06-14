@@ -1652,7 +1652,7 @@ DWORD Asc2FileTime( LPTSTR lpb, FILETIME * pft )
 
 #ifdef   USESYSTIME
 
-   ZeroMemory(pt, sizeof(SYSTEMTIME));
+   memset(pt, 0, sizeof(SYSTEMTIME));
 
    pt->wDay    = (WORD)iD;
    pt->wMonth  = (WORD)iM;

@@ -60,7 +60,7 @@ VOID  RunExcell( LPTSTR lpf )
    LPTSTR   lpexe, lpcmd, lptmp;
    MYHAND   hFind;
 
-   ZeroMemory(prs, sizeof(RUNSTR));
+   memset(prs, 0, sizeof(RUNSTR));
 
    lpexe = g_szExeFile;
    lpcmd = g_szCmdLine;
@@ -1015,7 +1015,7 @@ BOOL		bAdd2List( LPSTR lps, DWORD dwFlag )
 		{
          m_pl1 = lpmb;
          k++;
-         ZeroMemory(lpmb,dwSiz);
+         memset(lpmb, 0, dwSiz);
 
          lpmb->m_dwLen  = i;  // set length of string
          lpmb->m_dwFlag = dwFlag;
@@ -1109,7 +1109,7 @@ BOOL		bAdd2List( LPSTR lps, DWORD dwFlag )
 		               {
                         m_pla = lpmb2;
                         k++;
-                        ZeroMemory(lpmb2,dwSiz);
+                        memset(lpmb2, 0, dwSiz);
                         dwFlag |= Done_TWO;  // and have listed BOTH
 
                         lpmb2->m_dwLen  = i;  // set length of string
@@ -1149,7 +1149,7 @@ BOOL		bAdd2List( LPSTR lps, DWORD dwFlag )
 		               {
                         m_plx1 = lpmb2;
                         k++;
-                        ZeroMemory(lpmb2,dwSiz);
+                        memset(lpmb2, 0, dwSiz);
                         dwFlag |= Done_X1;  // and have listed extended 1
 
                         lpmb2->m_dwLen  = i;  // set length of string
@@ -1189,7 +1189,7 @@ BOOL		bAdd2List( LPSTR lps, DWORD dwFlag )
 		               {
                         m_plx2 = lpmb2;
                         k++;
-                        ZeroMemory(lpmb2,dwSiz);
+                        memset(lpmb2, 0, dwSiz);
                         dwFlag |= Done_X2;  // and have listed BOTH
 
                         lpmb2->m_dwLen  = i;  // set length of string
@@ -4132,7 +4132,7 @@ VOID  Set_SI( STARTUPINFO * p, LPTSTR pcmdline, BOOL bIsCon )
    /* Launch the process and waits for it to complete */
    STARTUPINFO si;
 
-   ZeroMemory( &si, sizeof(STARTUPINFO) );
+   memset( &si, 0, sizeof(STARTUPINFO) );
 
    si.cb = sizeof(STARTUPINFO);
    //si.lpReserved = NULL;
@@ -4160,11 +4160,11 @@ DWORD WINAPI do_runexcell( PVOID lpParam )  // thread data
 //   dc4w_UI(TRUE);
 
    // CreateThread - NO CREATE PROCESS and wait for it ...
-   ZeroMemory(psSI, sizeof(STARTUPINFO) );
+   memset(psSI, 0, sizeof(STARTUPINFO) );
 
    Set_SI( psSI, lpcmd, FALSE );
 
-   ZeroMemory(psPI, sizeof(PROCESS_INFORMATION));
+   memset(psPI, 0, sizeof(PROCESS_INFORMATION));
 
    // system(
    if( CreateProcess( lpexe,   // name of executable module
