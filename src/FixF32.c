@@ -1060,9 +1060,9 @@ DWORD  OutTheLine( LPTSTR lpbgn, LPTSTR lpout, DWORD dwlen, PDWORD pdwl, DWORD d
 
    *pdwl     = dwl;
    *pbDnCrLf = bDnCrLf;
-#ifdef  NDEBUG
+#ifdef  _WIN32
    UNREFERENCED_PARAMETER(dwl2);
-#endif   // NDEBUG
+#endif   // _WIN32
 
    return dwo;
 

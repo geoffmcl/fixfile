@@ -15,6 +15,7 @@ extern  "C"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <time.h>
 #ifdef _WIN32
 //////////////////////////////////////////////////////////////
 #define	WIN32_MEAN_AND_LEAN
@@ -42,6 +43,7 @@ typedef MYHAND* PMYHAND;
 typedef unsigned int DWORD;
 typedef unsigned short WORD;
 typedef unsigned char BYTE;
+typedef BYTE* PBYTE;
 typedef FILE * MYHAND;
 typedef MYHAND* PMYHAND;
 typedef bool BOOL;
@@ -113,6 +115,7 @@ typedef struct _WIN32_FIND_DATA {
 #define _strnicmp strncmp
 #define strcmpi strcasecmp
 #define _fullpath(a,b,c) realpath(b,a)
+#define UNREFERENCED_PARAMETER(a)  a;
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()

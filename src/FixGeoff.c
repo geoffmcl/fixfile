@@ -2984,10 +2984,12 @@ DWORD GetWdCnt( LPTSTR lptmp )
 DWORD FixInfo( LPTSTR lpn, LPTSTR lpb, DWORD dwoff, DWORD dwLen )
 {
    DWORD dwRet = 0;
+#ifdef _WIN32
    UNREFERENCED_PARAMETER(lpn);
    UNREFERENCED_PARAMETER(lpb);
    UNREFERENCED_PARAMETER(dwoff);
    UNREFERENCED_PARAMETER(dwLen);
+#endif
    return dwRet;
 }
 

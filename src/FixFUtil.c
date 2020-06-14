@@ -32,7 +32,9 @@ VOID  MCDECL chkme( LPTSTR lpf, ... )
    va_end(arglist);
    sprtf(lpd);
 //#else    // NDEBUG
-   //UNREFERENCED_PARAMETER(lpf);
+#ifdef _WIN32
+    //UNREFERENCED_PARAMETER(lpf);
+#endif
 #endif   // NDEBUG n/y
    if(( lpf[0] == 'C' ) &&
       ( lpf[1] == ':' ) &&

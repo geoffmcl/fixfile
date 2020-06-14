@@ -54,23 +54,23 @@ typedef struct tagKCHK {
 }KCHK, * PKCHK;
 
 PTSTR pboddel[] = {
-   { "lang=EN-GB" },
-   { "link=blue" },
-   { "vlink=purple" },
-   { "style='tab-interval:36.0pt'" },
-   { 0 }
+    "lang=EN-GB" ,
+    "link=blue" ,
+    "vlink=purple" ,
+    "style='tab-interval:36.0pt'" ,
+    0 
 };
 
 PTSTR ppdel[] = {
-   { "class=MsoNormal" },
-   { "class=MsoPlainText" },
-   { "style='margin-left:36.0pt'" },
-   { 0 }
+    "class=MsoNormal" ,
+    "class=MsoPlainText" ,
+    "style='margin-left:36.0pt'" ,
+    0 
 };
 
 PTSTR ptddel[] = {
-   { "style='padding:.75pt .75pt .75pt .75pt'" },
-   { 0 }
+    "style='padding:.75pt .75pt .75pt .75pt'" ,
+    0 
 };
 
 VOID Do_Del( PTSTR pb, PTSTR pdel, PDWORD pdw )
@@ -1006,7 +1006,9 @@ static LPTSTR _s_pComBgn, _s_pComEnd;
 
    KillLList(ph); //    PLE   ph = &g_HtmlList;
 
+#ifdef _WIN32
    UNREFERENCED_PARAMETER(lpf);
+#endif
 
    return bRet;
 }

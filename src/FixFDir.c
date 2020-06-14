@@ -385,6 +385,11 @@ void  _setyougest( PLE ph )
    ULARGE_INTEGER liMin, liMax, liCur;
 //VOID GetSystemTimeAsFileTime(LPFILETIME lpSystemTimeAsFileTime);  // file time
    FILETIME ft;
+#ifdef USE_COMP_FIO
+   liMin.QuadPart = time(NULL);
+   ft.dwLowDateTime = liMin.LowPart;
+   ft.dwHighDateTime = liMin.HighPart;
+#else 
 
    GetSystemTimeAsFileTime(&ft);  // file time
    liMin.LowPart  = ft.dwLowDateTime;
@@ -392,6 +397,7 @@ void  _setyougest( PLE ph )
    // this is system time - maybe should bump 'some' time, but
    // for now 'assume' this is a directory file *ON* this system
    // thus all date/time on files *MUST* be less than this!!!
+#endif 
    liMax.QuadPart = 0;  // or perhaps -(__int64)liMin.QuadPart;
    icnt = 0;
    Traverse_List( ph, pn )
