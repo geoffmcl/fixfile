@@ -116,6 +116,8 @@ typedef struct _WIN32_FIND_DATA {
 #define strcmpi strcasecmp
 #define _fullpath(a,b,c) realpath(b,a)
 #define UNREFERENCED_PARAMETER(a)  a;
+#define IDCANCEL            2
+#define IDYES               6
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()
