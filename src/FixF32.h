@@ -55,6 +55,7 @@ typedef int INT;
 typedef INT* PINT;
 typedef char TCHAR;
 typedef long LONG;
+typedef unsigned long ULONG;
 typedef long long LONGLONG;
 typedef unsigned long long ULONGLONG;
 typedef __int64_t __int64;
@@ -114,6 +115,9 @@ typedef struct _WIN32_FIND_DATA {
 #define FILE_END SEEK_END // 3 End of file
 #define _strnicmp strncmp
 #define strcmpi strcasecmp
+#define lstrcmpi strcasecmp
+#define lstrlen strlen
+#define lstrcpy strcpy
 #define _fullpath(a,b,c) realpath(b,a)
 #define UNREFERENCED_PARAMETER(a)  a;
 #define IDCANCEL            2
@@ -123,6 +127,7 @@ typedef struct _WIN32_FIND_DATA {
 #define _MAX_DIR    256 // max. length of path component
 #define _MAX_FNAME  256 // max. length of file name component
 #define _MAX_EXT    256 // max. length of extension component
+#define MAX_PATH   264 // max. length of full pathname
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()
