@@ -865,7 +865,9 @@ BOOL	Do_Fix_HTML( LPTSTR lpb, DWORD dws, LPTSTR lpf )
    gdwLines = dwl;
    gdwLine2 = dwl2;
 
+#ifdef _WIN32
    UNREFERENCED_PARAMETER(lpf);
+#endif
 
    return bRet;
 }

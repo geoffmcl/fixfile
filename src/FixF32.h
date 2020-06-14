@@ -50,6 +50,7 @@ typedef char * LPTSTR;
 typedef char * PTSTR;
 typedef char * LPSTR;
 typedef int INT;
+typedef INT* PINT;
 typedef char TCHAR;
 typedef long LONG;
 typedef long long LONGLONG;
