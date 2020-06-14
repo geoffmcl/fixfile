@@ -404,7 +404,7 @@ __int64 MyFileSeek (MYHAND hf, __int64 distance, DWORD MoveMethod)
 
    li.QuadPart = distance;
 
-   li.LowPart = SetFilePointer (hf, li.LowPart, &li.HighPart, MoveMethod);
+   li.LowPart = SetFilePointer (hf, li.LowPart, &li.HighPart, MoveMethod); // !USE_COMP_FIO
 
    if (li.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
    {
@@ -943,11 +943,30 @@ BOOL  gmGetFullPath( LPTSTR lpd, LPTSTR lpf, DWORD dws )
 
 BOOL  gmGetFileTitle( LPTSTR lpt, LPTSTR lpf, DWORD dws )
 {
-   BOOL  bRet;
+   BOOL  bRet = FALSE;
+#ifdef USE_COMP_FIO
+   int i, len = (int)strlen(lpf);
+   if (len) {
+       char ch;
+       DWORD cnt = 0;
+       for (i = len - 1; i >= 0; i--) {
+           ch = lpf[i];
+           if ((ch == '\\') || (ch == '/') || (ch == ':')) {
+               if (cnt && (cnt < dws)) {
+                   strcpy(lpt, &lpf[i - 1]);
+                   bRet = TRUE;
+               }
+               break;
+           }
+           cnt++;
+       }
+   }
+#else
    if( GetFileTitle( lpf, lpt, (WORD)dws ) )
       bRet = FALSE;
    else
       bRet = TRUE;
+#endif
    return bRet;
 }
 
@@ -992,7 +1011,7 @@ VOID  gmGetFolder( LPTSTR lpd, LPTSTR lpf )
 // From MSDN Jan 2001
 // Case One: calling the function with lpDistanceToMoveHigh == NULL 
 // Try to move hFile's file pointer some distance. 
-//dwPtr = SetFilePointer (hFile, lDistance, NULL, FILE_BEGIN) ; 
+//dwPtr = SetFilePointer (hFile, lDistance, NULL, FILE_BEGIN) ; // !USE_COMP_FIO
 //if (dwPtr == INVALID_SET_FILE_POINTER) // Test for failure
 //{ 
     // Obtain the error code. 
@@ -1003,7 +1022,7 @@ VOID  gmGetFolder( LPTSTR lpd, LPTSTR lpf )
 // 
 // Case Two: calling the function with lpDistanceToMoveHigh != NULL 
 // Try to move hFile's file pointer some huge distance. 
-//dwPtrLow = SetFilePointer (hFile, lDistLow, & lDistHigh, FILE_BEGIN) ;  
+//dwPtrLow = SetFilePointer (hFile, lDistLow, & lDistHigh, FILE_BEGIN) ; // !USE_COMP_FIO 
 // Test for failure
 //if (dwPtrLow == INVALID_SET_FILE_POINTER && (dwError = GetLastError()) != NO_ERROR )
 //{ 
@@ -1016,10 +1035,18 @@ BOOL  gmSet_File_Pos( MYHAND hf, LARGE_INTEGER li, DWORD dwFrom )
    BOOL  bRet = FALSE;  // assume FAILED
    if( VFH(hf) )
    {
-      DWORD dwLow;
-      ULONG dwl = li.LowPart;
-      LONG  dwh = li.HighPart;
-      dwLow = SetFilePointer( hf,   // file handle, with READ or WRITE access
+       ULONG dwl = li.LowPart;
+       LONG  dwh = li.HighPart;
+#ifdef USE_COMP_FIO
+       int res;
+       if (dwh)
+           return FALSE;
+       res = fseek(hf, dwl, dwFrom);
+       if (!res)
+           bRet = TRUE;
+#else
+       DWORD dwLow;
+      dwLow = SetFilePointer( hf,   // file handle, with READ or WRITE access !USE_COMP_FIO
          dwl,        // low DWORD to move
          &dwh,       // ptr to high DWORD to move
          dwFrom );   // like FILE_BEGIN = move method
@@ -1032,6 +1059,7 @@ BOOL  gmSet_File_Pos( MYHAND hf, LARGE_INTEGER li, DWORD dwFrom )
       {
          bRet = TRUE;   // ok
       }
+#endif
    }
    return bRet;
 }
@@ -1264,7 +1292,7 @@ INT   InStrWhole( LPTSTR lpb, LPTSTR lps )
 BOOL comp_stgn( LPTSTR pRem, LPTSTR p2 )
 {
    INT   c1, c2;
-   LPTSTR   p1 = LocalAlloc( LPTR, (strlen(pRem)+1) );
+   LPTSTR   p1 = (LPTSTR)MALLOC( (strlen(pRem)+1) );
 
    if( !p1 )
    {
@@ -1335,24 +1363,14 @@ INT   InStrIS( LPTSTR lpStg, LPTSTR lpCmp )
    if( i && j )   // && ( i >= j ) )
    {
       lpb = lpStg;   // must use REAL string to get correct offset
-      //lpb = LocalAlloc( LPTR, (i+1) );
-      //if(!lpb)
-      //{
-      //   chkme( "C:ERROR: Memory FAILED (%d bytes)"MEOR, i );
-      //   return 0;
-      //}
-      lps = LocalAlloc( LPTR, (j+1) );
+      lps = (LPTSTR)MALLOC( (j+1) );
       if(!lps)
       {
-         LocalFree(lpb);
          chkme( "C:ERROR: Memory FAILED (%d bytes)"MEOR, i );
          return 0;
       }
-      //strcpy(lpb,lpStg);
-      //MaxTrim(lpb);
       strcpy(lps,lpCmp);
       MaxTrim(lps);
-      //i = strlen(lpb);
       j = strlen(lps);
       if( !i || !j || ( i < j ) )
          goto Clean_Up;
@@ -1375,7 +1393,7 @@ INT   InStrIS( LPTSTR lpStg, LPTSTR lpCmp )
 Clean_Up:
 
       //LocalFree(lpb);
-      LocalFree(lps);
+      MFREE(lps);
 
    }
    return iRet;
