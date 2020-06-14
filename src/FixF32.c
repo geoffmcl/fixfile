@@ -2174,7 +2174,7 @@ INT  ProcessFiles( VOID )
                i = sprtf("%s\n", lpm);
                break;
 #else // !USE_COMP_FIO
-               i = MessageBox( NULL, lpm, "PROCESSING ERROR",
+               i = MessageBox( NULL, lpm, "PROCESSING ERROR", // !USE_COMP_FIO
                   MB_YESNO | MB_ICONINFORMATION );
                if( i == IDNO )
                {

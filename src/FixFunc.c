@@ -294,8 +294,13 @@ BOOL  Out_Funcs( LPTSTR lpb, DWORD dwLen, LPTSTR lpf )
                         //        sLn = ""
                         if( bDebug )   // Then
                         {
-                           iPos = MessageBox(NULL,sMsg, "DEFINE PROBLEM",
+#ifdef USE_COMP_FIO
+                            if (!VERB1)
+                                sprtf("%s"MEOR, sMsg);
+#else
+                           iPos = MessageBox(NULL,sMsg, "DEFINE PROBLEM", // !USE_COMP_FIO
                               (MB_OK | MB_ICONINFORMATION) );
+#endif
                         }
                         iErr = ERR_DEFINE;
                      }  //  End If
@@ -340,8 +345,13 @@ BOOL  Out_Funcs( LPTSTR lpb, DWORD dwLen, LPTSTR lpf )
                            }
                            if( bDebug )   // Then
                            {
-                              iPos = MessageBox(NULL,sMsg, "LENGTH PROBLEM",
+#ifdef USE_COMP_FIO
+                               if (!VERB1)
+                                   sprtf("%s"MEOR, sMsg);
+#else
+                              iPos = MessageBox(NULL,sMsg, "LENGTH PROBLEM", // !USE_COMP_FIO
                                        (MB_OK | MB_ICONINFORMATION) );
+#endif
                            }
                            iLen = 0;
                            iErr = ERR_MAXLN;   // abort with this problem
@@ -540,8 +550,13 @@ BOOL  Out_Funcs( LPTSTR lpb, DWORD dwLen, LPTSTR lpf )
                   }
                   if( bDebug )   // Then
                   {
-                     iPos = MessageBox(NULL,sMsg, "LENGTH PROBLEM",
+#ifdef USE_COMP_FIO
+                      if (!VERB1)
+                          sprtf("%s"MEOR, sMsg);
+#else
+                     iPos = MessageBox(NULL,sMsg, "LENGTH PROBLEM", // !USE_COMP_FIO
                               (MB_OK | MB_ICONINFORMATION) );
+#endif
                   }
                   iLen = 0;
                   iErr = ERR_MAXLN;   // abort with this problem
@@ -588,9 +603,14 @@ BOOL  Out_Funcs( LPTSTR lpb, DWORD dwLen, LPTSTR lpf )
                   // iLenb = MsgBox(sMsg, (vbQuestion Or vbYesNo), "DEBUG QUERY")
                   if( bDebug )   // Then
                   {
-                     iPos = MessageBox(NULL,sMsg, "DISCARD QUESTION",
+#ifdef USE_COMP_FIO
+                      if (!VERB5)
+                          sprtf("%s"MEOR, sMsg);
+#else
+                     iPos = MessageBox(NULL,sMsg, "DISCARD QUESTION", // !USE_COMP_FIO
                         (MB_YESNOCANCEL | MB_ICONQUESTION) );
                         // MB_YESNO | MB_ICONQUESTION) );
+#endif
                   }
                   else
                   {

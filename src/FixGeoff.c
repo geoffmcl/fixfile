@@ -4244,7 +4244,7 @@ DWORD WINAPI do_runexcell( PVOID lpParam )  // thread data
          sprintf(EndBuf(lpe), MEOR"MSG [%s]", (char *)lpMsgBuf);
          // Process any inserts in lpMsgBuf.
          // Display the string.
-         //MessageBox( NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
+         // MessageBox( NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
          // Free the buffer.
          LocalFree( lpMsgBuf );
       }
