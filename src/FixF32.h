@@ -30,12 +30,15 @@ typedef MYHAND* PMYHAND;
 //////////////////////////////////////////////////////////////
 #else // !_WIN32 == unix
 /////////////////////////////////////////////////////////////////
+#include <limits.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h> // for strlen, ...
 #include <stdint.h>
 #include <inttypes.h> // for "%" PRId64 " bytes"
 #include <ctype.h> // for toupper, ...
+#include <strings.h> // forstrcasecmp
+
 typedef unsigned int DWORD;
 typedef unsigned short WORD;
 typedef unsigned char BYTE;
@@ -107,6 +110,8 @@ typedef struct _WIN32_FIND_DATA {
 #define FILE_CURRENT SEEK_CUR // 2 Current position of the file pointer1
 #define FILE_END SEEK_END // 3 End of file
 #define _strnicmp strncmp
+#define strcmpi strcasecmp
+#define _fullpath(a,b,c) realpath(b,a)
 ////////////////////////////////////////////////
 #endif
 #include <stdio.h>      // for vsprintf()

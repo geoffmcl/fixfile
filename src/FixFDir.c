@@ -463,8 +463,6 @@ long MyCompareFileTime(FILETIME * pft1, FILETIME * pft2)
 
 #ifndef _WIN32
 #define CompareFileTime MyCompareFileTime 
-#include <strings.h>
-#define strcmpi strcasecmp
 #endif // !_WIN32
 // #define  Traverse_Cont(pListHead,pListNext)
 //   for( pListNext = pListNext->Flink; pListNext != pListHead; pListNext = pListNext->Flink )

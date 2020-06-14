@@ -956,27 +956,47 @@ BOOL  Get_Sp_Siz( LPTSTR lpc )
 BOOL  Get_X_Inp( LPTSTR lpc )
 {
    BOOL  bRet = FALSE;   // assume fail
+   MYHAND   h = 0;
+   size_t  dws = 0;
+   DWORD dwh = 0;
    if( *lpc )
    {
-      MYHAND   h = CreateFile( lpc, // file name
+#ifdef USE_COMP_FIO
+       struct stat buf;
+       if (stat(lpc, &buf)) {
+           sprtf("Unable to 'stat' exclude file '%s'!\n", lpc);
+           return FALSE;
+       }
+       if (buf.st_mode & M_IS_DIR) {
+           sprtf("Exclude file '%s' is a DIRECTORY!\n", lpc);
+           return FALSE;
+       }
+       h = fopen(lpc, "r");
+#else // !COMP
+       h = CreateFile( lpc, // file name
          GENERIC_READ,  // access mode
          FILE_SHARE_READ,  // share mode
          0, // SD
          OPEN_EXISTING, // how to create
          FILE_ATTRIBUTE_NORMAL,  // file attributes
          0 ); // handle to template file
+      if (VFH(h))
+          dws = GetFileSize(h, &dwh);
+#endif // COMP y/n
       if( VFH(h) )
       {
-         DWORD dws;
-         DWORD dwh = 0;
-         dws = GetFileSize(h, &dwh);
          if( dws && !dwh )
          {
             LPTSTR lpb = MALLOC( (dws + 8) );
             if(lpb)
             {
-               if( ( ReadFile( h, lpb, dws, &dwh, NULL ) ) &&
+#ifdef USE_COMP_FIO
+                dwh = fread(lpb, 1, dws, h);
+                if (dwh == dws)
+#else
+                if( ( ReadFile( h, lpb, dws, &dwh, NULL ) ) &&
                   ( dws == dwh ) )
+#endif
                {
                   DWORD    dwc, dwb, dwi;
                   INT      c;
@@ -1037,7 +1057,12 @@ BOOL  Get_X_Inp( LPTSTR lpc )
                MFREE(lpb);
             }
          }
+
+#ifdef USE_COMP_FIO
+         fclose(h);
+#else
          CloseHandle(h);
+#endif
       }
    }
    return bRet;
@@ -1334,7 +1359,7 @@ BOOL  Chk_Command( INT icnt, LPTSTR * lpa )
                         Show_Bad_Cmd( lpa[i], 'P' );
                      Pgm_Flag |= Fix_PARA;   // Add remove Cr/Lf EXCEPT pairs
                      break;
-#endif			; AddPara
+#endif	// ; AddPara
 #if	AddRem
                   case 'R':
                      lpc++;
