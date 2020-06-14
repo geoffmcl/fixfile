@@ -12,7 +12,8 @@ extern  "C"
 #endif
 
 #include "FixFVers.h" // version, and other FIRST things
-
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #ifdef _WIN32
 //////////////////////////////////////////////////////////////
@@ -134,6 +135,12 @@ typedef struct _WIN32_FIND_DATA {
 #define  ISHEX(a)   ( ISNUM(a) ||\
       ( ISUPPER(a) && ( a >= 'A' ) && ( a <= 'F' ) ) ||\
       ( ISLOWER(a) && ( a >= 'a' ) && ( a <= 'f' ) ) )
+
+#ifdef _WIN32
+#define M_IS_DIR _S_IFDIR
+#else // !_MSC_VER
+#define M_IS_DIR S_IFDIR
+#endif
 
 extern   BOOL  outit( LPTSTR lpb, DWORD dwLen );
 extern   VOID  Pgm_Exit( INT iRet );   // single exit to application

@@ -5,8 +5,6 @@
 // Function List:
 // 
 // ==================================================================
-#include <sys/types.h>
-#include <sys/stat.h>
 #include	"FixF32.h"
 //#include  "FixFUtil.h"
 
@@ -872,11 +870,6 @@ PRL  InrList( LPTSTR lpl, DWORD dwLen )
 //#define  IS_WILD     4
 ///////////////////////////////////////////////////////////////////////////////
 #ifdef USE_COMP_FIO
-#ifdef _WIN32
-#define M_IS_DIR _S_IFDIR
-#else // !_MSC_VER
-#define M_IS_DIR S_IFDIR
-#endif
 
 DWORD  IsValidFile4(LPTSTR lpf, PWIN32_FIND_DATA pfd)
 {

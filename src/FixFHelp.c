@@ -732,25 +732,47 @@ BOOL  Get_Inp_Fil( LPTSTR lpc )
    BOOL  bRet = FALSE;   // assume fail
    if( *lpc )
    {
-      MYHAND   h = CreateFile( lpc, // file name
+       MYHAND h = 0;
+       size_t dws = 0;
+       DWORD dwh = 0;
+#ifdef USE_COMP_FIO
+       struct stat buf;
+       if (stat(lpc, &buf)) {
+           sprtf("Unable to 'stat' input file '%s'!\n", lpc);
+           return FALSE;
+       }
+       if (buf.st_mode & M_IS_DIR) {
+           sprtf("Input file '%s' is a DIRECTORY!\n", lpc);
+           return FALSE;
+       }
+       h = fopen(lpc, "r");
+#else // !#ifdef USE_COMP_FIO
+      h = CreateFile( lpc, // file name
          GENERIC_READ,  // access mode
          FILE_SHARE_READ,  // share mode
          0, // SD
          OPEN_EXISTING, // how to create
          FILE_ATTRIBUTE_NORMAL,  // file attributes
          0 ); // handle to template file
+      if (VFH(h))
+      {
+          dws = GetFileSize(h, &dwh);
+      }
+#endif // #ifdef USE_COMP_FIO
       if( VFH(h) )
       {
-         DWORD dws;
-         DWORD dwh = 0;
-         dws = GetFileSize(h, &dwh);
          if( dws && !dwh )
          {
             LPTSTR   lpb = MALLOC( (dws + 8 + MXARGSS) );
             if(lpb)
             {
+#ifdef USE_COMP_FIO
+                dwh = fread(lpb, 1, dws, h);
+                if (dwh == dws)
+#else // #ifdef USE_COMP_FIO
                if(( ReadFile( h, lpb, dws, &dwh, NULL ) ) &&
                   ( dws == dwh ) )
+#endif // #ifdef USE_COMP_FIO y/n
                {
                   LPTSTR * lpv;
                   DWORD    dwc, dwb, dwi, dwk;
@@ -873,8 +895,12 @@ BOOL  Get_Inp_Fil( LPTSTR lpc )
                MFREE(lpb);
             }
          }
-
+#ifdef USE_COMP_FIO
+         fclose(h);
+#else // #ifdef USE_COMP_FIO
          CloseHandle(h);
+#endif //#ifdef USE_COMP_FIO
+
       }
    }
    return bRet;
