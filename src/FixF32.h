@@ -38,8 +38,8 @@ typedef MYHAND* PMYHAND;
 #include <stdint.h>
 #include <inttypes.h> // for "%" PRId64 " bytes"
 #include <ctype.h> // for toupper, ...
-#include <strings.h> // forstrcasecmp
-
+#include <strings.h> // for strcasecmp, ...
+#include <stdarg.h> // for va_start, ...
 typedef unsigned int DWORD;
 typedef unsigned short WORD;
 typedef unsigned char BYTE;
