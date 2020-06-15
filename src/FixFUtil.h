@@ -143,6 +143,7 @@ extern BOOL FT2LST(FILETIME* pft, SYSTEMTIME* pst);
 extern BOOL Is_Valid_ST(SYSTEMTIME* pst);
 extern BOOL grmWriteFile(MYHAND* ph, LPTSTR lpb);
 extern BOOL grmCloseFile(MYHAND* ph);
+extern LPTSTR GetExQuotes(LPTSTR cp);
 
 #endif	// _FixFUtil_H
 // eof - FixFUtil.h

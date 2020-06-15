@@ -434,23 +434,6 @@ BOOL  DoGeoff2( LPTSTR lpf )
    return FALSE;
 }
 
-LPTSTR   GetExQuotes( LPTSTR cp )
-{
-   LPTSTR   lps;
-   INT      ilen;
-   if( *cp != 34 )
-      return cp;
-   lps = GetNxtBuf();
-   strcpy(lps, &cp[1]);
-   ilen = strlen(lps);
-   if(ilen && ( lps[ilen-1] == 34 ) )
-   {
-      ilen--;
-      lps[ilen] = 0;
-   }
-   return lps;
-}
-
 // -g - process the input as a sort of free form database
 // There must be a unique separator between each record.
 // -gb";--------------" - Change boundary/separation string

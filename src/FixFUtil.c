@@ -2395,6 +2395,23 @@ BOOL     grmWriteFile(MYHAND* ph, LPTSTR lpb)
     return FALSE;
 }
 
+LPTSTR   GetExQuotes(LPTSTR cp)
+{
+    LPTSTR   lps;
+    INT      ilen;
+    if (*cp != 34)
+        return cp;
+    lps = GetNxtBuf();
+    strcpy(lps, &cp[1]);
+    ilen = strlen(lps);
+    if (ilen && (lps[ilen - 1] == 34))
+    {
+        ilen--;
+        lps[ilen] = 0;
+    }
+    return lps;
+}
+
 
 ///////////////////////////////////////////////////////
 
