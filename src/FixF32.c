@@ -1791,6 +1791,8 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
    li.HighPart = pwl->wl_sFD.nFileSizeHigh;
    li.LowPart  = dws = pwl->wl_sFD.nFileSizeLow;
 
+#ifdef ADDGEOFF1  // -g1 command
+   ///////////////////////////////////////////////
    if( Pgm_Flag & Do_Geoff ) {
       PTSTR pt = "-g";
       if( Pgm_Flag & Do_Geoff1 )
@@ -1802,15 +1804,15 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
                   pt );
       }
 
-#ifdef ADDGEOFF1  // -g1 command
       if( Pgm_Flag & Do_Geoff1 )
          bRet = DoGeoff1(lpf);
       else
-#endif   // #ifdef ADDGEOFF1  // -g1 command
          bRet = DoGeoff2(lpf);
 
       return bRet;
    }
+   ////////////////////////////////////////////////
+#endif   // #ifdef ADDGEOFF1  // -g1 command
 
 #ifdef  ADDJOBS1   // -j 22 Jan. 2004
 // case 'J': lpc++; int Get_J_Cmd(PTSTR lpc)
