@@ -381,7 +381,7 @@ BOOL IsAgency( PTSTR pa )
 
 // add LINE to LINE double linked LIST
 // ===================================
-VOID addLine2LineList(PSTR pline)
+VOID addLine2LineList(LPSTR pline)
 {
    PLE   phl = &g_sLines;
    PLE   pnl;

@@ -2291,8 +2291,10 @@ BOOL Is_Valid_ST(SYSTEMTIME* pst)
 
 // from : https://docs.microsoft.com/en-us/windows/win32/sysinfo/converting-a-time-t-value-to-a-file-time
 // from winnt.h
-// #define Int32x32To64(a, b)  (((__int64)((long)(a))) * ((__int64)((long)(b))))
-// #define UInt32x32To64(a, b) (((unsigned __int64)((unsigned int)(a))) * ((unsigned __int64)((unsigned int)(b))))
+#ifndef _WIN32
+#define Int32x32To64(a, b)  (((__int64)((long)(a))) * ((__int64)((long)(b))))
+#define UInt32x32To64(a, b) (((unsigned __int64)((unsigned int)(a))) * ((unsigned __int64)((unsigned int)(b))))
+#endif // !_WIN32
 void TimetToFileTime(time_t t, LPFILETIME pft)
 {
     LONGLONG ll = Int32x32To64(t, 10000000) + 116444736000000000;
