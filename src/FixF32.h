@@ -97,7 +97,7 @@ typedef struct _SYSTEMTIME {
 typedef struct _FILETIME {
     DWORD dwLowDateTime;
     DWORD dwHighDateTime;
-} FILETIME;
+} FILETIME, * LPFILETIME;
 typedef struct _WIN32_FIND_DATA {
     DWORD dwFileAttributes;
     //FILETIME ftCreationTime;

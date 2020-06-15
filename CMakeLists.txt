@@ -63,6 +63,7 @@ if(WIN32 AND MSVC)
 else()
     # items for unix
     set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-unused-but-set-variable -Wno-unused-value -Wno-unused-variable")
+    set(WARNING_FLAGS "${WARNING_FLAGS} -Wno-char-subscripts -Wno-trigraphs -Wno-maybe-uninitialized")
 endif()
 
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${WARNING_FLAGS} ${MSVC_FLAGS} -D_REENTRANT" )
