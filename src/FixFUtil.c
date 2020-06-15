@@ -1338,7 +1338,7 @@ BOOL comp_stgn( LPTSTR pRem, LPTSTR p2 )
 
 Exit_Cmp:
 
-   LocalFree(p1);
+   MFREE(p1);
 
    if( c1 != c2 )
       return(FALSE);
@@ -1483,7 +1483,9 @@ DWORD Asc2FileTime( LPTSTR lpb, FILETIME * pft )
    INT      ilen = 0;
    LPTSTR   lpdt = _s_szdt;
    SYSTEMTIME * pt = &_s_st;
-   LPTSTR lpft;   // = FileTime2AscStg( pft );
+#ifndef USE_COMP_FIO
+    LPTSTR lpft;   // = FileTime2AscStg( pft );
+#endif // !USE_COMP_FIO
 
 //0-4 Day of the month (1-31) 
 //5-8 Month (1 = January, 2 = February, and so on) 
@@ -1675,6 +1677,7 @@ DWORD Asc2FileTime( LPTSTR lpb, FILETIME * pft )
    lpdt[ilen] = 0;
 
 #ifdef   USESYSTIME
+#ifndef USE_COMP_FIO // TODO: Re-add some verification of decode
 
    memset(pt, 0, sizeof(SYSTEMTIME));
 
@@ -1698,7 +1701,7 @@ DWORD Asc2FileTime( LPTSTR lpb, FILETIME * pft )
       lpft = FileTime2AscStg( pft );
       chkme( "WARNING: Different [%s] to [%s]"MEOR, lpdt, lpft );
    }
-
+#endif // !USE_COMP_FIO
 #else // !#ifdef   USESYSTIME
 
    if( iY < 1980 )
@@ -1850,6 +1853,8 @@ BOOL  Chk4Debug( LPTSTR lpd )
 
 VOID  GetModulePath( LPTSTR lpb )
 {
+    *lpb = 0;
+#ifdef _WIN32
    LPTSTR   p;
    GetModuleFileName( NULL, lpb, 256 );
    p = strrchr( lpb, '\\' );
@@ -1861,7 +1866,7 @@ VOID  GetModulePath( LPTSTR lpb )
 #ifndef  NDEBUG
    Chk4Debug( lpb );
 #endif   // !NDEBUG
-
+#endif // _WIN32
 }
 
 
@@ -1875,8 +1880,8 @@ VOID  GetModulePath( LPTSTR lpb )
 ///////////////////////////////////////////////////////////////////////////////
 LPTSTR   ALeft( LPTSTR lpl, DWORD dwi )
 {
-   LPTSTR   lps = LocalAlloc(LPTR, (dwi+1));
-   DWORD    dwk;
+    LPTSTR   lps = (LPSTR)MALLOC((dwi + 1));
+    DWORD    dwk;
    if(!lps)
    {
       sprtf( "CRITIAL ERROR: Memory FAILED on %d bytes!"MEOR, (dwi+1) );
@@ -1890,7 +1895,7 @@ LPTSTR   ALeft( LPTSTR lpl, DWORD dwi )
 LPTSTR   FLeft( LPTSTR lps )
 {
    if(lps)
-      LocalFree(lps);
+      MFREE(lps);
    return NULL;
 }
 
