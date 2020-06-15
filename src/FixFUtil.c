@@ -1988,10 +1988,17 @@ VOID	BumpFileName( LPTSTR lps )
 
 void  DO(PTSTR a)
 {
-   DWORD _dww;
-   if( gbRedON ) {
+#ifdef USE_COMP_FIO
+    size_t len = strlen(a);
+    if (len) {
+        fwrite(a, 1, len, stderr);
+    }
+#else // !USE_COMP_FIO
+    DWORD _dww;
+    if( gbRedON ) {
       WriteFile(ghErrOut,a,strlen(a),&_dww,NULL); }
    WriteFile(ghStdOut,a,strlen(a),&_dww,NULL);
+#endif // USE_COMP_FIO y/n
    DiagString(a);
 }
 
