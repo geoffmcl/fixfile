@@ -82,7 +82,11 @@
 
 // VersNum3    7  // start -g = process my phone.txt file
 // VerDate	"9 February, 2002"  // *** TBC ***
+#ifdef _WIN32
 #define  ADDGEOFF2   // only when completed - 6 March, 2002???
+#else
+// #undef ADDGEOFF2 // FIX20200611 - module NOT ported
+#endif
 
 //  VersNum3    6  // fix TAB replaced with ^I
 //  VerDate	"27 January, 2002"  // this meant
