@@ -40,85 +40,6 @@ char * htm_header5 = "</body></html>"MEOR;
 char sz_file_name[264];
 #define  TO_TOP_MAX        25    // put a TOP marker, each this number
 
-// ==========================================================
-// helper functions
-// convert UTC FILETIME to local FILETIME and then
-//     local   FILETIME to local SYSTEMTIME
-/*
-from : https://www.tutorialspoint.com/c_standard_library/c_function_localtime.htm
-struct tm {
-   int tm_sec;         / * seconds,  range 0 to 59          * /
-   int tm_min;         / * minutes, range 0 to 59           * /
-   int tm_hour;        / * hours, range 0 to 23             * /
-   int tm_mday;        / * day of the month, range 1 to 31  * /
-   int tm_mon;         / * month, range 0 to 11             * /   
-   int tm_year;        / * The number of years since 1900   * /
-   int tm_wday;        / * day of the week, range 0 to 6    * / 
-   int tm_yday;        / * day in the year, range 0 to 365  * /
-   int tm_isdst;       / * daylight saving time             * /
-};
-
-from : https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
-typedef struct _SYSTEMTIME {
-    WORD wYear;
-    WORD wMonth;
-    WORD wDayOfWeek;
-    WORD wDay;
-    WORD wHour;
-    WORD wMinute;
-    WORD wSecond;
-    WORD wMilliseconds;
-} SYSTEMTIME, *PSYSTEMTIME, *LPSYSTEMTIME;
-
-*/
-BOOL Is_Valid_ST(SYSTEMTIME* pst)
-{
-    if (pst->wYear > 30827)
-        return FALSE;
-    if ((pst->wMonth < 1) || (pst->wMonth > 12))
-        return FALSE;
-    if ((pst->wDay < 1) || (pst->wDay > 31))
-        return FALSE;
-    if ((pst->wHour < 0) || (pst->wHour > 23))
-        return FALSE;
-    if ((pst->wMinute < 0) || (pst->wMinute > 59))
-        return FALSE;
-    if ((pst->wSecond < 0) || (pst->wSecond > 59))
-        return FALSE;
-    return TRUE;
-}
-
-BOOL     FT2LST( FILETIME * pft, SYSTEMTIME * pst )
-{
-   BOOL  bRet = FALSE;
-#ifdef USE_COMP_FIO
-   time_t local = pft->dwLowDateTime;
-   // (pft->dwHighDateTime << 32)
-   struct tm* info = localtime(&local);
-   if (info) {
-       pst->wYear = info->tm_year + 1900;
-       pst->wMonth = info->tm_mon + 1;
-       pst->wDayOfWeek = info->tm_wday;
-       pst->wDay = info->tm_mday;
-       pst->wHour = info->tm_hour;
-       pst->wMinute = info->tm_min;
-       pst->wSecond = info->tm_sec;
-       pst->wMilliseconds = 0;
-       if (Is_Valid_ST(pst))
-           bRet = TRUE;
-   }
-
-#else
-   FILETIME    ft;
-   if( ( FileTimeToLocalFileTime( pft, &ft ) ) && // UTC file time converted to local
-       ( FileTimeToSystemTime( &ft, pst)     ) )
-   {
-      bRet = TRUE;
-   }
-#endif
-   return bRet;
-}
-
 INT	GetFDTYear( FILETIME * pft )
 {
    INT         i = 0;
@@ -189,8 +110,12 @@ int set_file_load( char * lb, char * file )
     if (buf.st_mode & M_IS_DIR)
         goto No_Go;
     strcpy(lb, file);
-    fd.ftLastWriteTime.dwHighDateTime = buf.st_mtime >> 32;
-    fd.ftLastWriteTime.dwLowDateTime = buf.st_mtime & 0xFFFFFFFF;
+    // TODO: THIS IS WRONG - see Timettofiletime
+    // *****************************************
+    // fd.ftLastWriteTime.dwHighDateTime = buf.st_mtime >> 32;
+    // fd.ftLastWriteTime.dwLowDateTime = buf.st_mtime & 0xFFFFFFFF;
+    TimetToFileTime(buf.st_mtime, &fd.ftLastWriteTime);
+    // TODO:This probably must also be fixed
     fd.nFileSizeHigh = 0;
     // fd.nFileSizeHigh = buf.st_size >> 32;
     fd.nFileSizeLow = buf.st_size & 0xFFFFFFFF;

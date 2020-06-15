@@ -383,7 +383,7 @@ void  _setyougest( PLE ph )
    PLE      pn;
    PLNLIST  pll;
    ULARGE_INTEGER liMin, liMax, liCur;
-//VOID GetSystemTimeAsFileTime(LPFILETIME lpSystemTimeAsFileTime);  // file time
+// VOID GetSystemTimeAsFileTime(LPFILETIME lpSystemTimeAsFileTime);  // file time // !USE_COMP_FIO
    FILETIME ft;
 #ifdef USE_COMP_FIO
    liMin.QuadPart = time(NULL);
@@ -391,7 +391,7 @@ void  _setyougest( PLE ph )
    ft.dwHighDateTime = liMin.HighPart;
 #else 
 
-   GetSystemTimeAsFileTime(&ft);  // file time
+   GetSystemTimeAsFileTime(&ft);  // file time // !USE_COMP_FIO
    liMin.LowPart  = ft.dwLowDateTime;
    liMin.HighPart = ft.dwHighDateTime;
    // this is system time - maybe should bump 'some' time, but

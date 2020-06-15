@@ -6,7 +6,7 @@
 // 
 // ==================================================================
 #include	"FixF32.h"
-//#include  "FixFUtil.h"
+#include  "FixFUtil.h"
 
 #define  USESYSTIME     // switch to using sys time conversion
 
@@ -889,8 +889,11 @@ DWORD  IsValidFile4(LPTSTR lpf, PWIN32_FIND_DATA pfd)
         pfd->nFileSizeHigh = 0;
 //#endif
         pfd->nFileSizeLow = buf.st_size & 0xFFFFFFFF;
-        pfd->ftLastWriteTime.dwHighDateTime = buf.st_mtime >> 32;
-        pfd->ftLastWriteTime.dwLowDateTime = buf.st_mtime & 0xFFFFFFFF;
+        // TODO: THIS IS WRONG - see TimetToFileTime
+        // *****************************************
+        // pfd->ftLastWriteTime.dwHighDateTime = buf.st_mtime >> 32;
+        // pfd->ftLastWriteTime.dwLowDateTime = buf.st_mtime & 0xFFFFFFFF;
+        TimetToFileTime(buf.st_mtime, &pfd->ftLastWriteTime);
         //pfd->ftCreationTime = pfd->ftLastWriteTime;
         //pfd->ftLastAccessTime = pfd->ftLastWriteTime;
     }
@@ -1562,8 +1565,8 @@ DWORD Asc2FileTime( LPTSTR lpb, FILETIME * pft )
       dwl++;
    }
 
-      if( ilen < MXDTSTG )
-         lpdt[ilen++] = ' ';
+   if( ilen < MXDTSTG )
+       lpdt[ilen++] = ' ';
 
 //5-10 Minute (0-59) 
 //11-15 Hour (0-23 on a 24-hour clock) 
@@ -1580,8 +1583,9 @@ DWORD Asc2FileTime( LPTSTR lpb, FILETIME * pft )
    if( *lpb != ':' )
       return 0;
 
-      if( ilen < MXDTSTG )
-         lpdt[ilen++] = *lpb;
+   if( ilen < MXDTSTG )
+       lpdt[ilen++] = *lpb;
+
    lpb++;
    dwl++;
 
@@ -1718,7 +1722,7 @@ DWORD Asc2FileTime( LPTSTR lpb, FILETIME * pft )
       LPTSTR lpft = FileTime2AscStg( pft );
       SYSTEMTIME  st;
       sprtf( "File=[%s] but get [%s]"MEOR, lpdt, lpft );
-      if( FileTimeToSystemTime( pft, &st ) )  // file time to convert
+      if( FileTimeToSystemTime( pft, &st ) )  // file time to convert // !USE_COMP_FIO // !USESYSTIME
       {
          if(( iD != st.wDay ) ||
             ( iM != st.wMonth ) ||
@@ -1786,9 +1790,12 @@ LPTSTR   FileTime2AscStg( FILETIME * pft )
 {
    LPTSTR lpb = GetNxtBuf();
    SYSTEMTIME  st;
-
+#ifdef USE_COMP_FIO
+   if (FT2LST( pft, &st))
+#else
    if( FileTimeToSystemTime( pft,   // file time to convert
       &st ) )   // receives system time
+#endif
    {
 //         "%02d-%02d-%02d %02d:%02d:%02d",
        sprintf(lpb,
@@ -2221,5 +2228,106 @@ char* Get_I64_Stg(__int64 num)
     cp = get_nn(cp);
     return cp;
 }
+
+// ==========================================================
+// helper functions
+// convert UTC FILETIME to local FILETIME and then
+//     local   FILETIME to local SYSTEMTIME
+/*
+from : https://www.tutorialspoint.com/c_standard_library/c_function_localtime.htm
+struct tm {
+   int tm_sec;         / * seconds,  range 0 to 59          * /
+   int tm_min;         / * minutes, range 0 to 59           * /
+   int tm_hour;        / * hours, range 0 to 23             * /
+   int tm_mday;        / * day of the month, range 1 to 31  * /
+   int tm_mon;         / * month, range 0 to 11             * /
+   int tm_year;        / * The number of years since 1900   * /
+   int tm_wday;        / * day of the week, range 0 to 6    * /
+   int tm_yday;        / * day in the year, range 0 to 365  * /
+   int tm_isdst;       / * daylight saving time             * /
+};
+
+from : https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-systemtime
+typedef struct _SYSTEMTIME {
+    WORD wYear;
+    WORD wMonth;
+    WORD wDayOfWeek;
+    WORD wDay;
+    WORD wHour;
+    WORD wMinute;
+    WORD wSecond;
+    WORD wMilliseconds;
+} SYSTEMTIME, *PSYSTEMTIME, *LPSYSTEMTIME;
+
+*/
+BOOL Is_Valid_ST(SYSTEMTIME* pst)
+{
+    if (pst->wYear > 30827)
+        return FALSE;
+    if ((pst->wMonth < 1) || (pst->wMonth > 12))
+        return FALSE;
+    if ((pst->wDay < 1) || (pst->wDay > 31))
+        return FALSE;
+    if ((pst->wHour < 0) || (pst->wHour > 23))
+        return FALSE;
+    if ((pst->wMinute < 0) || (pst->wMinute > 59))
+        return FALSE;
+    if ((pst->wSecond < 0) || (pst->wSecond > 59))
+        return FALSE;
+    return TRUE;
+}
+
+// from : https://docs.microsoft.com/en-us/windows/win32/sysinfo/converting-a-time-t-value-to-a-file-time
+// from winnt.h
+// #define Int32x32To64(a, b)  (((__int64)((long)(a))) * ((__int64)((long)(b))))
+// #define UInt32x32To64(a, b) (((unsigned __int64)((unsigned int)(a))) * ((unsigned __int64)((unsigned int)(b))))
+void TimetToFileTime(time_t t, LPFILETIME pft)
+{
+    LONGLONG ll = Int32x32To64(t, 10000000) + 116444736000000000;
+    pft->dwLowDateTime = (DWORD)ll;
+    pft->dwHighDateTime = ll >> 32;
+}
+
+// from : https://www.gamedev.net/forums/topic/565693-converting-filetime-to-time_t-on-windows/
+// A FILETIME is the number of 100-nanosecond intervals since January 1, 1601.
+// A time_t is the number of 1 - second intervals since January 1, 1970.
+time_t  filetime_to_timet(FILETIME* pft)
+{
+    ULARGE_INTEGER ull;
+    ull.LowPart = pft->dwLowDateTime;
+    ull.HighPart = pft->dwHighDateTime;
+    return ((ull.QuadPart / 10000000ULL) - 11644473600ULL);
+}
+
+BOOL     FT2LST(FILETIME* pft, SYSTEMTIME* pst)
+{
+    BOOL  bRet = FALSE;
+#ifdef USE_COMP_FIO
+    time_t local = filetime_to_timet(pft);
+    struct tm* info = localtime(&local);
+    if (info) {
+        pst->wYear = info->tm_year + 1900;
+        pst->wMonth = info->tm_mon + 1;
+        pst->wDayOfWeek = info->tm_wday;
+        pst->wDay = info->tm_mday;
+        pst->wHour = info->tm_hour;
+        pst->wMinute = info->tm_min;
+        pst->wSecond = info->tm_sec;
+        pst->wMilliseconds = 0;
+        if (Is_Valid_ST(pst))
+            bRet = TRUE;
+    }
+
+#else
+    FILETIME    ft;
+    if ((FileTimeToLocalFileTime(pft, &ft)) && // UTC file time converted to local // !USE_COMP_FIO
+        (FileTimeToSystemTime(&ft, pst))) // !USE_COMP_FIO
+    {
+        bRet = TRUE;
+    }
+#endif
+    return bRet;
+}
+
 
 // eof - FixFUtil.c
