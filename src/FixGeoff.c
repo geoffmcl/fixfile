@@ -673,58 +673,6 @@ BOOL  bNo2Commas   = TRUE;
 BOOL  bAddSpPad    = FALSE;
 BOOL  bUseArray    = FALSE;
 
-//extern   MYHAND	grmCreateFile( LPTSTR fn );
-//extern   BOOL     grmWriteFile( MYHAND * ph, LPTSTR lpb );
-//extern   BOOL     grmCloseFile( MYHAND * ph );
-BOOL     grmCloseFile( MYHAND * ph )
-{
-   MYHAND   h = *ph;
-   if( VFH(h) )
-   {
-#ifdef USE_COMP_FIO
-       fclose(h);
-#else //!USE_COMP_FIO
-      CloseHandle(h);
-#endif // USE_COMP_FIO y/n
-      *ph = 0;
-      return TRUE;
-   }
-   return FALSE;
-}
-
-BOOL     grmWriteFile( MYHAND * ph, LPTSTR lpb )
-{
-   MYHAND   h = *ph;
-   if( VFH(h) )
-   {
-      DWORD dww;
-      DWORD dwl = strlen(lpb);
-      if(dwl)
-      {
-#ifdef USE_COMP_FIO
-          dww = fwrite(lpb, 1, dwl, h);
-          if (dwl == dww)
-              return TRUE;
-          grmCloseFile(ph);
-          *ph = 0;
-#else // !USE_COMP_FIO
-         if( WriteFile(h,lpb,dwl,&dww,NULL) && ( dwl == dww ) )
-         {
-            return TRUE;
-         }
-         grmCloseFile( ph );
-         *ph = INVALID_HANDLE_VALUE;
-#endif // USE_COMP_FIO y/n
-      }
-      else
-      {
-         return TRUE;
-      }
-   }
-   return FALSE;
-}
-
-
 DWORD GetWdCnt( LPTSTR lptmp );
 
 void  chkcpy( LPTSTR lpd, LPTSTR lps )

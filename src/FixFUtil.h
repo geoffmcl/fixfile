@@ -141,6 +141,8 @@ extern time_t filetime_to_timet(FILETIME* pft);
 extern void TimetToFileTime(time_t t, LPFILETIME pft);
 extern BOOL FT2LST(FILETIME* pft, SYSTEMTIME* pst);
 extern BOOL Is_Valid_ST(SYSTEMTIME* pst);
+extern BOOL grmWriteFile(MYHAND* ph, LPTSTR lpb);
+extern BOOL grmCloseFile(MYHAND* ph);
 
 #endif	// _FixFUtil_H
 // eof - FixFUtil.h
