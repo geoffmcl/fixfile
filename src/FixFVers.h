@@ -61,7 +61,12 @@
 
 // VersNum3    15  // add -j to massage job files to csv
 // VerDate	"22 January, 2004"  // see -j
+#ifdef _WIN32
 #define  ADDGEOFF1   // only when completed - 07 Dec. 2003 Fin ???
+#else
+// #undef ADDGEOFF1 // FIX20200611 - module NOT ported
+#endif
+
 // VersNum3    14  // add -g1 to massage special files
 // VerDate	"7 December, 2003"  // see -g1
 //  VersNum3    12  // add -wx[d|f]:one;two... to EXCLUDE DIR or FILES
