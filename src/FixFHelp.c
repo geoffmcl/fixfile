@@ -53,7 +53,7 @@ VOID  Do_VerMsg(VOID)
 
 VOID  Do_Happy_Msg(VOID)
 {
-	dmsg(	"                                            Happy fixing ..." );
+	dmsg(	"                                            Happy fixing ...\n" ); // FIX20200611: Add LF
 }
 
 ///////////////////////////////////////////////////////////////////////////////
