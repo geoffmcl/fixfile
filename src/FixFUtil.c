@@ -2235,7 +2235,7 @@ char* Get_I64_Stg(__int64 num)
 #if defined(_WIN32) && !defined(USE_COMP_FIO)
     sprintf(cp, "%I64d", num);
 #else
-    sprintf(cp, "%lld", num);
+    sprintf(cp, "%lld", (long long)num);
 #endif
     cp = get_nn(cp);
     return cp;
