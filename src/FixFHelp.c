@@ -281,7 +281,7 @@ BOOL  Set_V_Cmd( LPTSTR lps )
          if(dwi)  // if > 0
             Pgm_Flag |= VerbON;  // set general flag
          else
-            Pgm_Flag &= ~(VerbON);  // else reste general flag
+            Pgm_Flag &= ~(VerbON);  // else reset general flag
       }
    }
    return bRet;

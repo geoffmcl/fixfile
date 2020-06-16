@@ -181,7 +181,7 @@ MYHAND  Open_A_File( LPTSTR lpf )
          FILE_ATTRIBUTE_NORMAL,  // file attributes
          0 ); // handle to template file
 #else // !#ifdef _WIN32
-    h = fopen(lpf, "r");
+    h = fopen(lpf, "rb");
 #endif // #ifdef _WIN32 y/n
 
    if( !VFH(h) )
@@ -201,7 +201,7 @@ MYHAND   Creat_A_File( LPTSTR lpf )
          FILE_ATTRIBUTE_NORMAL,  // file attributes
          0 ); // handle to template file
 #else // !#ifdef _WIN32
-    h = fopen(lpf, "w");
+    h = fopen(lpf, "wb");
 #endif // #ifdef _WIN32 y/
 
    if( !VFH(h) )
@@ -290,15 +290,6 @@ VOID  Do_Init( VOID )
 //	; =========================
 //	Inc	Ax
 //    h = GetStdHandle(STD_OUTPUT_HANDLE);
-#ifdef _WIN32
-   ghStdOut = GetStdHandle( STD_OUTPUT_HANDLE );   // Standard out
-   ghErrOut = GetStdHandle( STD_ERROR_HANDLE  );   // error out
-   if( VFH(ghStdOut) )
-   {
-      if( !GetConsoleMode( ghStdOut, &gdwMode ) )
-         gbRedON = TRUE;
-   }
-#endif   
 
 //	Mov	Ax,MXLINE	; Get DEFAULT line length
 	g_dwMaxLine = MXLINE; // Set default LINE length
@@ -314,6 +305,7 @@ VOID  Do_Init( VOID )
 }
 // ; ==============================================================
 
+static char _sSetupMsg[256];
 // allocate and SET work memory -    Setup();    // intial SETUP
 // ============================
 BOOL  Setup(int argc, char* argv[])
@@ -327,14 +319,37 @@ BOOL  Setup(int argc, char* argv[])
         gpArgv = argv;
 
         DiagOpen();
-        ghStdOut = (MYHAND)0x0c;   // 1 Standard out
-        ghErrOut = (MYHAND)2;   // error out
+        // ghStdOut = (MYHAND)0x0c;   // 1 Standard out
+        // ghErrOut = (MYHAND)2;   // error out
 #ifdef USE_COMP_FIO
         ghStdOut = stdout;
         ghErrOut = stderr;
+#ifdef _WIN32
+        // how to detect redirection
+        if (!GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &gdwMode))
+            gbRedON = TRUE;
+#else // !_WIN32
+        // or isatty(STDOUT_FILENO)
+        if (!isatty(fileno(stdout))) {
+            gbRedON = TRUE;
+        }
+#endif // _WIN32 y/n
+#else
+#ifdef _WIN32
+        ghStdOut = GetStdHandle(STD_OUTPUT_HANDLE);   // Standard out
+        ghErrOut = GetStdHandle(STD_ERROR_HANDLE);   // error out
+        if (VFH(ghStdOut))
+        {
+            if (!GetConsoleMode(ghStdOut, &gdwMode))
+                gbRedON = TRUE;
+        }
+#else
+        ghStdOut = (MYHAND)1; // 0x0c;   // 1 Standard out
+        ghErrOut = (MYHAND)2;   // error out
+#endif   
 #endif        
 
-      sprtf( "Begin FixF32 with %d bytes of work memory."MEOR, sizeof(WRK) );
+      sprintf(_sSetupMsg, "Begin FixF32 with %d bytes of work memory."MEOR, (int)sizeof(WRK) );
       gdwSize = sizeof(WRK);  //  W.ws_dwSize    // ALLOCATION SIZE
 
 //		gnMaxCol  = MAXCOL;
@@ -674,6 +689,8 @@ BOOL  outit( LPTSTR lpb, DWORD dwLen )
 #else
       bRet = WriteFile(h, lpb, dwLen, &dww, NULL);
 #endif
+      if (dww == dwLen)
+          bRet = TRUE;
       gdwWritten += dwLen;
    }
 
@@ -1828,7 +1845,7 @@ BOOL  Do_File( PWL pwl, LPTSTR lpf )
 #ifdef USE_COMP_FIO
    if (dws)
    {
-       h = fopen(lpf, "r");
+       h = fopen(lpf, "rb");
    }
    else {
        if (VERB1) {
@@ -2228,6 +2245,10 @@ int	main( int argc, char * argv[] )
 
       if( Chk_Command( argc, argv ) )
          Give_Help( 3 );
+      if (VERB2) {
+          sprtf(_sSetupMsg);
+      }
+
       if( IsListEmpty( &gsFileList ) )
       {
          sprtf( "ERROR: No input file(s) given!"MEOR );
@@ -2243,8 +2264,8 @@ int	main( int argc, char * argv[] )
                sprtf( "ERROR: Unable to open/create output file of name"MEOR
                   "\t%s!"MEOR,
                   &gszOFName[0] ); // file name
-               Pgm_Exit( 10 );
             }
+            Pgm_Exit(10);
          }
       }
       if( VERB9 ) {
@@ -2276,7 +2297,7 @@ int	main( int argc, char * argv[] )
    }
    else
    {
-      sprtf( "ERROR: No command line given!"MEOR );
+      sprtf("ERROR: No command line given!"MEOR);
       Give_Help(2);
    }
 
